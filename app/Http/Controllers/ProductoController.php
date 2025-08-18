@@ -4,23 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Producto;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule; // Importa la clase Rule para validaciones de tipo 'in'
+use Illuminate\Validation\Rule;
 
 class ProductoController extends Controller
 {
-    /**
-     * Muestra una lista de productos, con funcionalidad de filtrado y paginación.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\View\View
-     */
     public function index(Request $request)
     {
-        // Inicia una nueva consulta sobre el modelo Producto.
         $query = Producto::query();
 
-        // Aplica filtros si los parámetros de la solicitud están presentes.
-        // El método 'filled' verifica si el parámetro existe y no está vacío.
         if ($request->filled('nombre')) {
             $query->where('nombre', 'like', '%' . $request->nombre . '%');
         }
@@ -30,7 +21,6 @@ class ProductoController extends Controller
         }
 
         if ($request->filled('anio')) {
-            // 'anio' se busca por coincidencia exacta ya que es un número.
             $query->where('anio', $request->anio);
         }
 
@@ -42,74 +32,78 @@ class ProductoController extends Controller
             $query->where('categoria', $request->categoria);
         }
 
-        // Cuenta el número de productos después de aplicar los filtros.
         $productosFiltrados = $query->count();
-        // Cuenta el número total de productos en la base de datos sin filtros.
         $totalProductos = Producto::count();
 
-        // Obtiene los productos paginados (5 por página) y ordenados por ID de forma descendente.
         $productos = $query->orderBy('id', 'desc')->paginate(5);
 
-        // Retorna la vista 'productos.index' pasando los productos, el conteo de filtrados
-        // y el total de productos para su visualización.
         return view('productos.index', compact('productos', 'productosFiltrados', 'totalProductos'));
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo producto.
-     *
-     * @return \Illuminate\View\View
-     */
     public function create()
     {
-        // Simplemente retorna la vista donde se encuentra el formulario de creación.
         return view('productos.create');
     }
 
-    /**
-     * Almacena un nuevo producto en la base de datos.
-     * Realiza validación de los datos de entrada.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function store(Request $request)
     {
-
-        // Valida los datos de la solicitud. Si la validación falla, Laravel
-        // automáticamente redirige de vuelta con los errores y los inputs.
+        // Se definen las reglas de validación.
         $validated = $request->validate([
-            // 'nombre': Requerido, string, máximo 20 caracteres.
-            // Regex: Debe empezar con una letra (incluyendo acentos y 'ñ'),
-            // seguido de 0 a 19 caracteres que pueden ser letras, acentos, 'ñ' o espacios.
-            'nombre' => ['required', 'string', 'max:20', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ][a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{0,19}$/'],
+            // Nombre: obligatorio, string, máximo 60 caracteres y no inicia con espacio.
+            // La regex /^[^\s].*/ asegura que el primer carácter no sea un espacio en blanco.
+            'nombre' => ['required', 'string', 'max:60', 'regex:/^[^\s].*/'],
 
-            // 'descripcion': Requerido, string, máximo 100 caracteres.
-            // Regex: Debe empezar con una letra (incluyendo acentos y 'ñ'),
-            // seguido de 0 a 99 caracteres que pueden ser letras, números, acentos, 'ñ' o espacios.
-            'descripcion' => ['required', 'string', 'max:100', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ][a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]{0,99}$/'],
+            // Modelo: obligatorio, string, máximo 50. La regex /^[A-Za-z0-9\-]+$/
+            // solo permite letras, números y guiones, sin espacios en ningún lugar.
+            'modelo' => ['required', 'string', 'max:50', 'regex:/^[A-Za-z0-9\-]+$/'],
 
-            // 'marca': Requerido, y debe ser uno de los valores especificados en el array.
-            'marca' => ['required', Rule::in(['Toyota', 'Honda', 'Ford', 'Chevrolet', 'Nissan', 'Volkswagen', 'Hyundai', 'Mazda', 'Kia'])],
+            // Marca: obligatorio, string. La regex /^[^\s].*/ evita espacios al inicio.
+            'marca' => ['required', 'string', 'regex:/^[^\s].*/'],
 
-            // 'modelo': Requerido, string, máximo 50 caracteres.
-            // Regex: Debe empezar con una letra, seguido de 0 a 49 caracteres que pueden ser letras, números, espacios o guiones.
-            'modelo' => ['required', 'string', 'max:50', 'regex:/^[a-zA-Z][a-zA-Z0-9\s\-]{0,49}$/'],
-
-            // 'anio': Requerido, 4 dígitos, entero, mínimo 1990, máximo el año actual.
+            // Año: obligatorio, 4 dígitos. El rango se valida con `min` y `max`.
             'anio' => ['required', 'digits:4', 'integer', 'min:1990', 'max:' . date('Y')],
 
-            // 'categoria': Requerido, y debe ser uno de los valores especificados en el array.
-            'categoria' => ['required', Rule::in(['Motor', 'Frenos', 'Suspensión', 'Eléctrico', 'Accesorios'])],
+            // Categoría: obligatorio, string. La regex /^[^\s].*/ evita espacios al inicio.
+            'categoria' => ['required', 'string', 'regex:/^[^\s].*/'],
 
-            // 'stock': Requerido, entero, mínimo 0.
+            // Descripción: opcional (nullable), string, máximo 250 caracteres.
+            // La regex /^[^\s].*/ evita espacios al inicio.
+            'descripcion' => ['nullable','string','max:250','regex:/^[^\s].*/'],
+
+            // Stock: obligatorio, entero, no puede ser negativo (`min:0`).
             'stock' => 'required|integer|min:0',
 
-            // 'precio': Requerido, numérico, mínimo 0.
-            'precio' => 'required|numeric|min:0',
+            // Precio de compra: opcional (nullable), numérico, no puede ser negativo.
+            'precio_compra' => 'nullable|numeric|min:0',
+
+            // Precio de venta: obligatorio, numérico, no puede ser negativo.
+            'precio_venta' => 'required|numeric|min:0',
+        ], [
+            // Mensajes de error personalizados para una mejor experiencia de usuario.
+            'nombre.required' => 'El nombre es obligatorio.',
+            'nombre.max' => 'El nombre no puede superar 60 caracteres.',
+            'nombre.regex' => 'El nombre no puede iniciar con un espacio.',
+            'modelo.required' => 'El modelo es obligatorio.',
+            'modelo.max' => 'El modelo no puede superar 50 caracteres.',
+            'modelo.regex' => 'El modelo solo puede contener letras, números y guiones, sin espacios al inicio.',
+            'marca.required' => 'La marca es obligatoria.',
+            'marca.regex' => 'La marca no puede iniciar con un espacio.',
+            'anio.required' => 'El año es obligatorio.',
+            'anio.digits' => 'El año debe tener 4 dígitos.',
+            'anio.min' => 'El año no puede ser menor a 1990.',
+            'anio.max' => 'El año no puede ser mayor al actual.',
+            'categoria.required' => 'La categoría es obligatoria.',
+            'categoria.regex' => 'La categoría no puede iniciar con un espacio.',
+            'descripcion.max' => 'La descripción no puede superar 250 caracteres.',
+            'descripcion.regex' => 'La descripción no puede iniciar con un espacio.',
+            'stock.required' => 'El stock es obligatorio.',
+            'stock.min' => 'El stock no puede ser negativo.',
+            'precio_compra.min' => 'El precio de compra no puede ser negativo.',
+            'precio_venta.required' => 'El precio de venta es obligatorio.',
+            'precio_venta.min' => 'El precio de venta no puede ser negativo.',
         ]);
 
-        // Verifica si ya existe un producto con la misma combinación de atributos clave.
+        // El resto del código para guardar el producto...
         $existe = Producto::where('nombre', $validated['nombre'])
             ->where('marca', $validated['marca'])
             ->where('modelo', $validated['modelo'])
@@ -117,108 +111,71 @@ class ProductoController extends Controller
             ->where('categoria', $validated['categoria'])
             ->exists();
 
-        // Si el producto ya existe, redirige de vuelta con un error y los datos de entrada.
         if ($existe) {
             return back()
                 ->withErrors(['duplicado' => 'Ya existe un producto con esa combinación de nombre, marca, modelo, año y categoría.'])
                 ->withInput();
         }
 
-        // Si la validación pasa y el producto no es un duplicado, crea el nuevo producto.
         Producto::create($validated);
 
-        // Redirige a la ruta 'productos.index' con un mensaje de éxito.
         return redirect()->route('productos.index')->with('success', 'Producto registrado correctamente.');
     }
-
-    /**
-     * Muestra los detalles de un producto específico.
-     *
-     * @param  \App\Models\Producto  $producto
-     * @return \Illuminate\View\View
-     */
     public function show(Producto $producto)
     {
-        // Retorna la vista 'productos.show' pasando el objeto Producto.
-        // Laravel automáticamente inyecta el modelo Producto basado en el ID de la ruta.
         return view('productos.show', compact('producto'));
     }
 
-    /**
-     * Muestra el formulario para editar un producto existente.
-     *
-     * @param  int  $id
-     * @return \Illuminate\View\View
-     */
     public function edit($id)
     {
-        // Busca el producto por su ID o lanza una excepción 404 si no se encuentra.
         $producto = Producto::findOrFail($id);
-        // Retorna la vista 'productos.edit' pasando el objeto Producto encontrado.
         return view('productos.edit', compact('producto'));
     }
 
-    /**
-     * Actualiza un producto existente en la base de datos.
-     * Realiza validación de los datos de entrada.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Producto  $producto
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function update(Request $request, Producto $producto)
     {
-        // Valida los datos de la solicitud para la actualización.
+        // Se aplican las mismas reglas de validación para la actualización.
         $validated = $request->validate([
-            // Las reglas son similares a 'store', pero los regex se ajustan para permitir
-            // que el primer carácter no sea un espacio o dígito en algunos casos.
-            'nombre' => ['required', 'string', 'max:20', 'regex:/^[^\s\d][a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]{0,19}$/'],
-            'descripcion' => ['required', 'string', 'max:100', 'regex:/^[^\s\d][a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]*$/'],
-            'marca' => ['required', 'string', Rule::in(['Toyota', 'Honda', 'Ford', 'Chevrolet', 'Nissan', 'Volkswagen', 'Hyundai', 'Mazda', 'Kia'])],
-            'modelo' => ['required', 'string', 'max:50', 'regex:/^[^\s][a-zA-Z0-9\s\-]*$/'],
+            'nombre' => ['required', 'string', 'max:60', 'regex:/^[^\s].*/'],
+            'modelo' => ['required', 'string', 'max:50', 'regex:/^[A-Za-z0-9\-]+$/'],
+            'marca' => ['required', 'string', 'regex:/^[^\s].*/'],
             'anio' => ['required', 'digits:4', 'integer', 'min:1990', 'max:' . date('Y')],
-            'categoria' => ['required', 'string', Rule::in(['Motor', 'Frenos', 'Suspensión', 'Eléctrico', 'Accesorios'])],
+            'categoria' => ['required', 'string', 'regex:/^[^\s].*/'],
+            'descripcion' => ['nullable','string','max:250','regex:/^[^\s].*/'],
             'stock' => 'required|integer|min:0',
-            'precio' => 'required|numeric|min:0',
+            'precio_compra' => 'nullable|numeric|min:0',
+            'precio_venta' => 'required|numeric|min:0',
+        ], [
+            'nombre.required' => 'El nombre es obligatorio.',
+            'nombre.max' => 'El nombre no puede superar 60 caracteres.',
+            'nombre.regex' => 'El nombre no puede iniciar con un espacio.',
+            'modelo.required' => 'El modelo es obligatorio.',
+            'modelo.max' => 'El modelo no puede superar 50 caracteres.',
+            'modelo.regex' => 'El modelo solo puede contener letras, números y guiones, sin espacios al inicio.',
+            'marca.required' => 'La marca es obligatoria.',
+            'marca.regex' => 'La marca no puede iniciar con un espacio.',
+            'anio.required' => 'El año es obligatorio.',
+            'anio.digits' => 'El año debe tener 4 dígitos.',
+            'anio.min' => 'El año no puede ser menor a 1990.',
+            'anio.max' => 'El año no puede ser mayor al actual.',
+            'categoria.required' => 'La categoría es obligatoria.',
+            'categoria.regex' => 'La categoría no puede iniciar con un espacio.',
+            'descripcion.max' => 'La descripción no puede superar 250 caracteres.',
+            'descripcion.regex' => 'La descripción no puede iniciar con un espacio.',
+            'stock.required' => 'El stock es obligatorio.',
+            'stock.min' => 'El stock no puede ser negativo.',
+            'precio_compra.min' => 'El precio de compra no puede ser negativo.',
+            'precio_venta.required' => 'El precio de venta es obligatorio.',
+            'precio_venta.min' => 'El precio de venta no puede ser negativo.',
         ]);
-
-        // Verifica si la combinación de atributos clave ya existe para OTRO producto.
-        // Se excluye el producto actual de la verificación de duplicados para permitir actualizaciones.
-        $existe = Producto::where('nombre', $validated['nombre'])
-            ->where('marca', $validated['marca'])
-            ->where('modelo', $validated['modelo'])
-            ->where('anio', $validated['anio'])
-            ->where('categoria', $validated['categoria'])
-            ->where('id', '<>', $producto->id) // Excluye el producto actual
-            ->exists();
-
-        // Si la combinación ya existe en otro producto, redirige de vuelta con un error.
-        if ($existe) {
-            return back()
-                ->withErrors(['duplicado' => 'Ya existe un producto con esa combinación de nombre, marca, modelo, año y categoría.'])
-                ->withInput();
-        }
-
-        // Actualiza el producto con los datos validados.
         $producto->update($validated);
 
-        // Redirige a la ruta 'productos.index' con un mensaje de éxito.
         return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
-
-    /**
-     * Elimina un producto específico de la base de datos.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function destroy($id)
     {
-        // Busca el producto por su ID o lanza una excepción 404 si no se encuentra.
         $producto = Producto::findOrFail($id);
-        // Elimina el producto.
         $producto->delete();
-        // Redirige a la ruta 'productos.index' con un mensaje de éxito.
         return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
     }
 }

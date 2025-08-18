@@ -1,3 +1,4 @@
+@extends('layouts.app')
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,49 +6,7 @@
     <title>Editar producto</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        body {
-            background-color: #121212;
-            color: #f1f1f1;
-        }
 
-        .form-container {
-            background-color: #1e1e1e;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 0 20px rgba(0,0,0,0.6);
-        }
-
-        .form-label {
-            color: #ccc;
-        }
-
-        .form-control {
-            background-color: #2c2c2c;
-            border: none;
-            color: #fff;
-        }
-
-        .form-control:focus {
-            background-color: #2c2c2c;
-            color: #fff;
-            border-color: #4caf50;
-            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
-        }
-
-        .btn-primary {
-            background-color: #4caf50;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #43a047;
-        }
-
-        h2 {
-            color: #e0e0e0;
-        }
-    </style>
 </head>
 <body>
 <div class="container py-5">
@@ -208,8 +167,9 @@
                     </div>
 
                     <div class="d-flex gap-3">
-                        <button type="submit" class="btn btn-primary">Actualizar</button>
-                        <a href="{{ route('productos.index') }}" class="btn btn-outline-light">Cancelar</a>
+                        <button type="submit" class="btn btn-danger">Actualizar</button>
+                        <button type="reset" class="btn btn-danger">Restablecer</button>
+                        <a href="{{ route('productos.index') }}" class="btn btn-danger">Cancelar</a>
                     </div>
                 </form>
             </div>

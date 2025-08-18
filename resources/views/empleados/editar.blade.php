@@ -1,3 +1,4 @@
+@extends('layouts.app')
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,81 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {{-- Bootstrap 5 CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #121212;
-            color: #f1f1f1;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
 
-        .form-container {
-            background-color: #1e1e1e;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 0 20px rgba(0,0,0,0.6);
-            width: 100%;
-            max-width: 700px;
-        }
-
-        .form-label {
-            color: #ccc;
-        }
-
-        .form-control {
-            background-color: #2c2c2c;
-            border: none;
-            color: #fff;
-        }
-
-        .form-control:focus {
-            background-color: #2c2c2c;
-            color: #fff;
-            border-color: #4caf50;
-            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
-        }
-
-        .btn-primary {
-            background-color: #4caf50;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #43a047;
-        }
-
-        .btn-outline-danger {
-            color: #dc3545;
-            border-color: #dc3545;
-        }
-
-        .btn-outline-danger:hover {
-            background-color: #dc3545;
-            color: #fff;
-        }
-
-        h2 {
-            color: #e0e0e0;
-            text-align: center; /* Centrar el título */
-        }
-
-        .invalid-feedback {
-            display: none;
-            color: #dc3545; /* Bootstrap default error color */
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-
-        /* Asegura que .invalid-feedback se muestre cuando el input tiene .is-invalid */
-        .form-control.is-invalid ~ .invalid-feedback,
-        select.is-invalid ~ .invalid-feedback,
-        textarea.is-invalid ~ .invalid-feedback {
-            display: block;
-        }
-    </style>
 </head>
 <body>
     <div class="form-container">
@@ -256,8 +183,9 @@
             </div>
 
             <div class="d-flex justify-content-start gap-2"> {{-- Ajustar para los 2 botones --}}
-                <button type="submit" class="btn btn-primary">Actualizar</button>
-                <a href="{{ route('empleados.index') }}" class="btn btn-outline-danger">Cancelar</a>
+                <button type="submit" class="btn btn-danger">Actualizar</button>
+                <button type="reset" class="btn btn-danger">Restablecer</button>
+                <a href="{{ route('empleados.index') }}" class="btn btn-danger">Cancelar</a>
             </div>
         </form>
     </div>

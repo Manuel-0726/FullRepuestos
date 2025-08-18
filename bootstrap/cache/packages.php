@@ -6,27 +6,6 @@
       0 => 'LaravelLang\\Config\\ServiceProvider',
     ),
   ),
-  'laravel-lang/lang' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'LaravelLang\\Lang\\ServiceProvider',
-    ),
-  ),
-  'laravel-lang/locales' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'LaravelLang\\Locales\\ServiceProvider',
-    ),
-  ),
-  'laravel-lang/publisher' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'LaravelLang\\Publisher\\ServiceProvider',
-    ),
-  ),
   'laravel/sail' => 
   array (
     'providers' => 
@@ -69,15 +48,22 @@
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
     ),
   ),
-  'spatie/laravel-ignition' => 
+  'pestphp/pest-plugin-laravel' => 
   array (
     'providers' => 
     array (
-      0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
+      0 => 'Pest\\Laravel\\PestServiceProvider',
     ),
+  ),
+  'spatie/laravel-ignition' => 
+  array (
     'aliases' => 
     array (
       'Flare' => 'Spatie\\LaravelIgnition\\Facades\\Flare',
+    ),
+    'providers' => 
+    array (
+      0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
     ),
   ),
 );

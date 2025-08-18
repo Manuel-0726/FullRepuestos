@@ -9,22 +9,21 @@ class FacturaVenta extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['codigo', 'fecha', 'cliente', 'subtotal', 'iva', 'total'];
-
+    protected $fillable = ['codigo', 'fecha', 'cliente_id', 'subtotal', 'iva', 'total'];
 
     protected $casts = [
         'fecha' => 'datetime',
-
-
     ];
 
-    /**
-     * Define la relación uno a muchos con DetalleFacturaVenta.
-     * Una FacturaVenta puede tener muchos DetalleFacturaVenta.
-     * 'factura_venta_id' es la clave foránea en la tabla 'detalle_factura_ventas'.
-     */
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class, 'cliente_id');
+
+    }
+
     public function detalles()
     {
-        return $this->hasMany(DetalleFacturaVenta::class, 'factura_venta_id');
+        return $this->hasMany(DetalleFacturaVenta::class, 'factura_venta_id')
+            ->with('producto'); // esto es clave
     }
 }

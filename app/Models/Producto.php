@@ -9,13 +9,13 @@ class Producto extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'marca', 'modelo', 'anio', 'categoria', 'precio', 'stock'];
+    protected $fillable = [
+        'nombre', 'descripcion', 'marca', 'modelo', 'anio', 'categoria',
+        'stock', 'precio_venta', 'precio_compra',
+    ];
 
-    /**
-     * Opcional: Define la relación uno a muchos inversa con DetalleFacturaVenta.
-     * Un Producto puede estar en muchos DetalleFacturaVenta.
-     * No es estrictamente necesaria para tu consulta actual, pero es buena práctica.
-     */
+
+
     public function detallesFacturaVenta()
     {
         return $this->hasMany(DetalleFacturaVenta::class, 'producto_id');

@@ -24,8 +24,12 @@
                 </div>
             @endif
 
-            <a href="{{ route('productos.create') }}" class="btn btn-primary mb-3">+ Nuevo producto</a>
 
+            <div class="d-flex mb-3 gap-2">
+                <a href="{{ route('productos.create') }}" class="btn btn-danger">+ Nuevo producto</a>
+
+                <a href="{{ route('welcome') }}" class="btn btn-danger">Inicio</a>
+            </div>
             <form action="{{ route('productos.index') }}" method="GET" class="mb-4">
                 @if(request()->hasAny(['nombre', 'modelo', 'anio', 'marca', 'categoria']))
                     <div class="mb-2 d-flex justify-content-end">
@@ -95,7 +99,7 @@
 
                 <div class="row mt-3">
                     <div class="col-md-12 d-grid">
-                        <button type="submit" class="btn btn-primary">Buscar</button>
+                        <button type="submit" class="btn btn-danger">Buscar</button>
                     </div>
                 </div>
             </form>
@@ -138,19 +142,19 @@
 
             @if(request()->hasAny(['nombre', 'modelo', 'anio', 'marca', 'categoria']) && isset($productosFiltrados))
                 <div class="mt-4 mb-4 text-center">
-                    <div class="d-inline-block bg-dark text-white py-2 px-4 rounded shadow">
+                    <div class="d-inline-block bg-danger text-white py-2 px-4 rounded shadow">
                         Se encontraron <strong>{{ $productosFiltrados }}</strong> resultados de <strong>{{ $totalProductos }}</strong> productos en total.
                     </div>
                 </div>
+
             @endif
 
             <div class="d-flex justify-content-center mt-4 mb-4">
                 {{ $productos->withQueryString()->links('vendor.pagination.bootstrap-5') }}
             </div>
 
-            <div class="d-flex gap-2 align-items-center mt-3 mb-4">
-                <a href="{{ route('welcome') }}" class="btn btn-outline-light">Inicio</a>
-                <button type="button" class="btn btn-outline-light" onclick="window.history.back();">Volver</button>
+            <div class="d-flex gap-2 danger-items-center mt-3 mb-4">
+
             </div>
         </div>
     </div>

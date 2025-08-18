@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class EmpleadoController extends Controller
 {
-    // Show all employees with search and pagination
     public function index(Request $request)
     {
         $search = $request->input('search');
@@ -19,12 +18,12 @@ class EmpleadoController extends Controller
         if ($search) {
             $empleados->where(function ($query) use ($search) {
                 $query->where('nombre', 'like', "%{$search}%")
-                      ->orWhere('apellido', 'like', "%{$search}%")
-                      ->orWhere('correo', 'like', "%{$search}%")
-                      ->orWhere('telefono', 'like', "%{$search}%")
-                      ->orWhere('sexo', 'like', "%{$search}%")
-                      ->orWhere('identidad', 'like', "%{$search}%")
-                      ->orWhere('puesto', 'like', "%{$search}%");
+                    ->orWhere('apellido', 'like', "%{$search}%")
+                    ->orWhere('correo', 'like', "%{$search}%")
+                    ->orWhere('telefono', 'like', "%{$search}%")
+                    ->orWhere('sexo', 'like', "%{$search}%")
+                    ->orWhere('identidad', 'like', "%{$search}%")
+                    ->orWhere('puesto', 'like', "%{$search}%");
             });
         }
 
@@ -33,85 +32,60 @@ class EmpleadoController extends Controller
         return view('empleados.index', compact('empleados'));
     }
 
-
-    
-
     public function create()
     {
         return view('empleados.create');
     }
 
-    // Save a new employee
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => ['required', 'string', 'max:30', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s-]+$/u'],
-            'apellido' => ['required', 'string', 'max:30', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s-]+$/u'],
+        $rules = [
+            'nombre' => ['required', 'string', 'max:30', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s-]+$/'],
+            'apellido' => ['required', 'string', 'max:30', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s-]+$/'],
             'correo' => ['required', 'email', 'max:30', 'unique:empleados,correo'],
-            'telefono' => ['required', 'string', 'max:8', 'regex:/^[2389][0-9]{7}$/', 'unique:empleados,telefono'],
+            'telefono' => ['required', 'max:8', 'regex:/^[2389]\d{7}$/', 'unique:empleados,telefono'],
             'sexo' => ['required', 'in:Masculino,Femenino,Otro'],
-            'identidad' => [
-                'required',
-                'string',
-                'size:15',
-                'regex:/^\d{4}-\d{4}-\d{5}$/',
-                'unique:empleados,identidad',
-                function ($attribute, $value, $fail) {
-                    $digits = str_replace('-', '', $value);
-                    if (strlen($digits) === 13) {
-                        $firstTwoDigits = (int) substr($digits, 0, 2);
-                        if ($firstTwoDigits > 18) {
-                            $fail('Los dos primeros números de la identidad no pueden ser mayores que 18.');
-                        }
-                    }
-                },
-            ],
             'puesto' => ['required', 'string', 'max:255'],
             'salario' => ['required', 'numeric', 'min:0', 'max:99999.99'],
             'fecha_contratacion' => ['required', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:today'],
             'direccion' => ['required', 'string', 'max:100'],
-        ], [
-            'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.max' => 'El nombre no debe tener más de 30 caracteres.',
-            'nombre.regex' => 'El nombre solo puede contener letras, espacios, guiones y tildes.',
+            'identidad' => [
+                'required',
+                'regex:/^\d{4}-\d{4}-\d{5}$/',
+                'unique:empleados,identidad',
+                function ($attribute, $value, $fail) {
+                    $partes = explode('-', $value);
+                    [$lugar, $anio, $correlativo] = $partes;
 
-            'apellido.required' => 'El apellido es obligatorio.',
-            'apellido.max' => 'El apellido no debe tener más de 30 caracteres.',
-            'apellido.regex' => 'El apellido solo puede contener letras, espacios, guiones y tildes.',
+                    $departamento = (int)substr($lugar, 0, 2);
+                    $municipio = (int)substr($lugar, 2, 2);
 
-            'correo.required' => 'El correo es obligatorio.',
-            'correo.email' => 'Ingrese un correo electrónico válido.',
-            'correo.max' => 'El correo no debe tener más de 30 caracteres.',
-            'correo.unique' => 'Este correo ya está registrado.',
+                    if ($departamento < 1 || $departamento > 18) {
+                        return $fail('El código de departamento es inválido.');
+                    }
 
-            'telefono.required' => 'El teléfono es obligatorio.',
-            'telefono.regex' => 'El teléfono debe tener 8 dígitos y comenzar con 2, 3, 8 o 9.',
-            'telefono.unique' => 'Este teléfono ya está registrado.',
-            'telefono.max' => 'El teléfono no debe tener más de 8 dígitos.',
+                    if ($municipio < 1 || $municipio > 28) {
+                        return $fail('El código de municipio es inválido.');
+                    }
 
-            'sexo.required' => 'El sexo es obligatorio.',
-            'sexo.in' => 'El sexo seleccionado no es válido.',
+                    $anioActual = date('Y');
+                    if ((int)$anio > (int)$anioActual) {
+                        return $fail('El año de nacimiento no puede ser mayor al actual.');
+                    }
+                    if ((int)$anio < 1900) {
+                        return $fail('El año de nacimiento no puede ser menor a 1900.');
+                    }
+                },
+            ],
+        ];
 
+        $messages = [
             'identidad.required' => 'El número de identidad es obligatorio.',
-            'identidad.size' => 'El número de identidad debe tener exactamente 15 caracteres (ej. 0801-1990-12345).',
             'identidad.regex' => 'El formato del número de identidad es inválido: debe ser ####-####-#####.',
             'identidad.unique' => 'Este número de identidad ya está registrado.',
+        ];
 
-            'puesto.required' => 'El puesto es obligatorio.',
-
-            'salario.required' => 'El salario es obligatorio.',
-            'salario.numeric' => 'El salario debe ser un número.',
-            'salario.min' => 'El salario debe ser un número positivo.',
-            'salario.max' => 'El salario no puede ser mayor de L.99,999.99.',
-
-            'fecha_contratacion.required' => 'La fecha de contratación es obligatoria.',
-            'fecha_contratacion.date' => 'La fecha de contratación no es una fecha válida.',
-            'fecha_contratacion.after_or_equal' => 'La fecha de contratación no puede ser anterior al 1 de enero de 2000.',
-            'fecha_contratacion.before_or_equal' => 'La fecha de contratación no puede ser una fecha futura.',
-
-            'direccion.required' => 'La dirección es obligatoria.',
-            'direccion.max' => 'La dirección no puede tener más de 100 caracteres.',
-        ]);
+        $request->validate($rules, $messages);
 
         try {
             Empleado::create($request->all());
@@ -124,17 +98,15 @@ class EmpleadoController extends Controller
         }
     }
 
-    // Show edit form
     public function edit($id)
     {
         $empleado = Empleado::findOrFail($id);
         return view('empleados.editar', compact('empleado'));
     }
 
-    // Update employee data
     public function update(Request $request, Empleado $empleado)
     {
-        $request->validate([
+        $rules = [
             'nombre' => ['required', 'string', 'max:30', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s-]+$/u'],
             'apellido' => ['required', 'string', 'max:30', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s-]+$/u'],
             'correo' => [
@@ -147,23 +119,35 @@ class EmpleadoController extends Controller
                 'required',
                 'string',
                 'max:8',
-                'regex:/^[2389][0-9]{7}$/',
+                'regex:/^[2389]\d{7}$/',
                 Rule::unique('empleados')->ignore($empleado->id),
             ],
             'sexo' => ['required', 'in:Masculino,Femenino,Otro'],
             'identidad' => [
                 'required',
-                'string',
-                'size:15',
                 'regex:/^\d{4}-\d{4}-\d{5}$/',
                 Rule::unique('empleados')->ignore($empleado->id),
                 function ($attribute, $value, $fail) {
-                    $digits = str_replace('-', '', $value);
-                    if (strlen($digits) === 13) {
-                        $firstTwoDigits = (int) substr($digits, 0, 2);
-                        if ($firstTwoDigits > 18) {
-                            $fail('Los dos primeros números de la identidad no pueden ser mayores que 18.');
-                        }
+                    $partes = explode('-', $value);
+                    [$lugar, $anio, $correlativo] = $partes;
+
+                    $departamento = (int)substr($lugar, 0, 2);
+                    $municipio = (int)substr($lugar, 2, 2);
+
+                    if ($departamento < 1 || $departamento > 18) {
+                        return $fail('El código de departamento es inválido.');
+                    }
+
+                    if ($municipio < 1 || $municipio > 28) {
+                        return $fail('El código de municipio es inválido.');
+                    }
+
+                    $anioActual = date('Y');
+                    if ((int)$anio > (int)$anioActual) {
+                        return $fail('El año de nacimiento no puede ser mayor al actual.');
+                    }
+                    if ((int)$anio < 1900) {
+                        return $fail('El año de nacimiento no puede ser menor a 1900.');
                     }
                 },
             ],
@@ -172,51 +156,15 @@ class EmpleadoController extends Controller
             'fecha_contratacion' => ['required', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:today'],
             'direccion' => ['required', 'string', 'max:100'],
             'estado' => ['required', 'in:Activo,Inactivo'],
-        ], [
-            'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.max' => 'El nombre no debe tener más de 30 caracteres.',
-            'nombre.regex' => 'El nombre solo puede contener letras, espacios, guiones y tildes.',
+        ];
 
-            'apellido.required' => 'El apellido es obligatorio.',
-            'apellido.max' => 'El apellido no debe tener más de 30 caracteres.',
-            'apellido.regex' => 'El apellido solo puede contener letras, espacios, guiones y tildes.',
-
-            'correo.required' => 'El correo es obligatorio.',
-            'correo.email' => 'Ingrese un correo electrónico válido.',
-            'correo.max' => 'El correo no debe tener más de 30 caracteres.',
-            'correo.unique' => 'Este correo ya está registrado.',
-
-            'telefono.required' => 'El teléfono es obligatorio.',
-            'telefono.regex' => 'El teléfono debe tener 8 dígitos y comenzar con 2, 3, 8 o 9.',
-            'telefono.unique' => 'Este teléfono ya está registrado.',
-            'telefono.max' => 'El teléfono no debe tener más de 8 dígitos.',
-
-            'sexo.required' => 'El sexo es obligatorio.',
-            'sexo.in' => 'El sexo seleccionado no es válido.',
-
+        $messages = [
             'identidad.required' => 'El número de identidad es obligatorio.',
-            'identidad.size' => 'El número de identidad debe tener exactamente 15 caracteres (ej. 0801-1990-12345).',
             'identidad.regex' => 'El formato del número de identidad es inválido: debe ser ####-####-#####.',
             'identidad.unique' => 'Este número de identidad ya está registrado.',
+        ];
 
-            'puesto.required' => 'El puesto es obligatorio.',
-
-            'salario.required' => 'El salario es obligatorio.',
-            'salario.numeric' => 'El salario debe ser un número.',
-            'salario.min' => 'El salario debe ser un número positivo.',
-            'salario.max' => 'El salario no puede ser mayor de L.99,999.99.',
-
-            'fecha_contratacion.required' => 'La fecha de contratación es obligatoria.',
-            'fecha_contratacion.date' => 'La fecha de contratación no es una fecha válida.',
-            'fecha_contratacion.after_or_equal' => 'La fecha de contratación no puede ser anterior al 1 de enero de 2000.',
-            'fecha_contratacion.before_or_equal' => 'La fecha de contratación no puede ser una fecha futura.',
-
-            'direccion.required' => 'La dirección es obligatoria.',
-            'direccion.max' => 'La dirección no puede tener más de 100 caracteres.',
-
-            'estado.required' => 'El estado es obligatorio.',
-            'estado.in' => 'El estado seleccionado no es válido.',
-        ]);
+        $request->validate($rules, $messages);
 
         try {
             $empleado->update($request->all());
@@ -229,7 +177,6 @@ class EmpleadoController extends Controller
         }
     }
 
-    // Show employee details
     public function show($id)
     {
         $empleado = Empleado::findOrFail($id);
@@ -243,25 +190,19 @@ class EmpleadoController extends Controller
 
         if ($query) {
             $empleados = Empleado::where('nombre', 'like', "%{$query}%")
-                                 ->orWhere('apellido', 'like', "%{$query}%")
-                                 ->orWhere('identidad', 'like', "%{$query}%")
-                                 ->limit(10) // Limitar el número de sugerencias para evitar respuestas muy grandes
-                                 ->get();
+                ->orWhere('apellido', 'like', "%{$query}%")
+                ->orWhere('identidad', 'like', "%{$query}%")
+                ->limit(10)
+                ->get();
 
             foreach ($empleados as $empleado) {
-                // Añadir nombre completo
                 $suggestions[] = $empleado->nombre . ' ' . $empleado->apellido;
-                // Añadir identidad
                 $suggestions[] = $empleado->identidad;
-                // Si quieres añadir otros campos como correo, asegúrate de que tenga sentido para la búsqueda
-                // $suggestions[] = $empleado->correo;
             }
 
-            // Eliminar duplicados y reindexar el array para asegurar un JSON limpio
             $suggestions = array_values(array_unique($suggestions));
         }
 
-        // DEBUG: Muestra lo que Laravel va a devolver en los logs
         Log::info('Autocomplete suggestions:', ['query' => $query, 'suggestions' => $suggestions]);
 
         return response()->json($suggestions);

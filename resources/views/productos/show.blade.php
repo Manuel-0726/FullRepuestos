@@ -53,41 +53,4 @@
     </div>
 @endsection
 
-<style>
-    body {
-        background-color: #343a40; /* Fondo oscuro */
-        color: #f8f9fa; /* Texto claro */
-    }
-    .card {
-        border: none;
-    }
-    .bg-darker {
-        background-color: #212529 !important; /* Un tono más oscuro */
-    }
-    .text-warning {
-        color: #ffc107 !important; /* Color amarillo */
-    }
-    .text-muted {
-        color: #adb5bd !important; /* Gris claro */
-    }
-    .border-secondary {
-        border-color: #6c757d !important;
-    }
-    .btn-warning {
-        background-color: #ffc107;
-        border-color: #ffc107;
-        color: #212529;
-    }
-    .btn-warning:hover {
-        background-color: #e0a800;
-        border-color: #e0a800;
-    }
-    .btn-outline-light {
-        color: #f8f9fa;
-        border-color: #f8f9fa;
-    }
-    .btn-outline-light:hover {
-        color: #212529;
-        background-color: #f8f9fa;
-    }
-</style>
+

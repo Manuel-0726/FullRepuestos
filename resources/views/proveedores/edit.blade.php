@@ -1,3 +1,4 @@
+@extends('layouts.app')
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,132 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     {{-- Select2 CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <style>
-        body {
-            background-color: #121212;
-            color: #f1f1f1;
-            padding: 2rem;
-        }
 
-        .form-container {
-            background-color: #1e1e1e;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 0 20px rgba(0,0,0,0.6);
-            width: 100%;
-            max-width: 950px; /* Ancho máximo similar al formulario de registro */
-            margin: 2rem auto; /* Centrar horizontalmente */
-        }
-
-        .form-label {
-            color: #ccc;
-        }
-
-        .form-control, .form-select, textarea {
-            background-color: #2c2c2c;
-            border: none;
-            color: #fff;
-        }
-
-        .form-control:focus, .form-select:focus, textarea:focus {
-            background-color: #2c2c2c;
-            color: #fff;
-            border-color: #4caf50;
-            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
-        }
-
-        .btn-primary {
-            background-color: #4caf50;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #43a047;
-        }
-
-        .btn-outline-light { /* Estilo para el botón Cancelar */
-            color: #f1f1f1;
-            border-color: #f1f1f1;
-        }
-        .btn-outline-light:hover {
-            background-color: #f1f1f1;
-            color: #121212;
-        }
-
-        h2 {
-            color: #e0e0e0;
-            text-align: center;
-        }
-
-        .invalid-feedback {
-            display: none;
-            width: 100%;
-            margin-top: 0.25rem;
-            font-size: 0.875em;
-            color: #dc3545;
-        }
-
-        .form-control.is-invalid ~ .invalid-feedback,
-        .form-select.is-invalid ~ .invalid-feedback,
-        textarea.is-invalid ~ .invalid-feedback {
-            display: block;
-        }
-
-        /* Estilos para Select2 para que coincidan con el tema oscuro */
-        .select2-container--default .select2-selection--multiple {
-            background-color: #2c2c2c !important;
-            border: none !important;
-            border-radius: .375rem !important;
-            padding: .375rem .75rem !important;
-            min-height: calc(1.5em + .75rem + 2px);
-        }
-        .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: .2rem;
-            padding: .2rem .5rem;
-        }
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-            color: white;
-            margin-right: 5px;
-        }
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-            color: #ddd;
-        }
-        .select2-container--default.select2-container--focus .select2-selection--multiple {
-            border-color: #4caf50 !important;
-            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25) !important;
-        }
-        .select2-container--default .select2-selection--multiple .select2-selection__rendered {
-            color: #fff;
-        }
-        .select2-dropdown {
-            background-color: #2c2c2c;
-            border: none;
-            color: #fff;
-        }
-        .select2-results__option {
-            color: #fff;
-        }
-        .select2-results__option--highlighted {
-            background-color: #4caf50 !important;
-            color: white !important;
-        }
-        .select2-search__field {
-            background-color: #1e1e1e !important;
-            color: #fff !important;
-            border-color: #4caf50 !important;
-        }
-        .is-invalid-select2 {
-            border-color: #dc3545 !important;
-            padding-right: calc(1.5em + 0.75rem) !important;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") !important;
-            background-repeat: no-repeat !important;
-            background-position: right calc(0.375em + 0.1875rem) center !important;
-            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
-        }
-    </style>
 </head>
 <body>
 <div class="container py-5">
@@ -350,8 +226,9 @@
                     </div>
 
                     <div class="d-flex justify-content-start gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary">Actualizar Proveedor</button>
-                        <a href="{{ route('proveedores.index') }}" class="btn btn-outline-light ms-2">Cancelar</a>
+                        <button type="submit" class="btn btn-danger">Actualizar Proveedor</button>
+                        <button type="reset" class="btn btn-danger">Restablecer</button>
+                        <a href="{{ route('proveedores.index') }}" class="btn btn-danger">Cancelar</a>
                     </div>
                 </form>
             </div>

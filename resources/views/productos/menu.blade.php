@@ -42,34 +42,5 @@
         </a>
     </div>
 
-    <style>
-        .card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: none;
-            border-radius: 15px;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        .system-icon {
-            height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        .card-text {
-            font-size: 1.1rem;
-            color: #6c757d;
-        }
-        .btn {
-            padding: 12px 30px;
-            font-weight: 500;
-            border-radius: 8px;
-        }
-    </style>
+
 @endsection

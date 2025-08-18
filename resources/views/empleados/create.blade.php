@@ -1,3 +1,4 @@
+@extends('layouts.app')
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,69 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {{-- Bootstrap 5 CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        body {
-            background-color: #121212;
-            color: #f1f1f1;
-        }
 
-        .form-container {
-            background-color: #1e1e1e;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 0 20px rgba(0,0,0,0.6);
-        }
-
-        .form-label {
-            color: #ccc;
-        }
-
-        .form-control {
-            background-color: #2c2c2c;
-            border: none;
-            color: #fff;
-        }
-
-        .form-control:focus {
-            background-color: #2c2c2c;
-            color: #fff;
-            border-color: #4caf50;
-            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
-        }
-
-        .btn-primary {
-            background-color: #4caf50;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #43a047;
-        }
-
-        h2 {
-            color: #e0e0e0;
-            text-align: center; /* Centrar el título */
-        }
-
-        /* Estilo para los mensajes de invalidación de Bootstrap */
-        .invalid-feedback {
-            display: none; /* Por defecto ocultos, se muestran con JS */
-            width: 100%;
-            margin-top: 0.25rem;
-            font-size: 0.875em;
-            color: #dc3545; /* Color de error de Bootstrap */
-        }
-
-        /* Mostrar el feedback cuando el input tiene la clase is-invalid */
-        .form-control.is-invalid ~ .invalid-feedback {
-            display: block;
-        }
-
-        /* Estilo para los select que usan invalid-feedback directamente */
-        select.is-invalid ~ .invalid-feedback {
-            display: block;
-        }
-    </style>
 </head>
 <body>
 <div class="container py-5">
@@ -143,18 +82,22 @@
                             </div>
                         </div>
 
-                        <div class="mb-3 col-md-6">
-                            <label for="identidad" class="form-label">Número de Identidad:</label>
-                            <input type="text" class="form-control @error('identidad') is-invalid @enderror" id="identidad" name="identidad" value="{{ old('identidad') }}" maxlength="15" required
-                                title="Debe ingresar 13 dígitos numéricos en formato ####-####-#####" />
-                            <div class="invalid-feedback" id="identidad-feedback">
+                        <div class="col-md-6">
+                            <label for="identidad" class="form-label">Identidad</label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text"><i class="bi bi-credit-card-2-front-fill"></i></span>
+                                <input type="text" id="identidad" name="identidad" maxlength="15"
+                                       value="{{ old('identidad') }}"
+                                       class="form-control @error('identidad') is-invalid @enderror"
+                                       oninput="formatearIdentidad(this)" />
                                 @error('identidad')
-                                    {{ $message }}
-                                @else
-                                    El número de identidad es requerido.
+                                <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                <div id="errorIdentidad" class="invalid-feedback"></div>
                             </div>
                         </div>
+
+
 
                         <div class="mb-3 col-md-6">
                             <label for="direccion" class="form-label">Dirección:</label>
@@ -230,9 +173,9 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                    <button type="button" class="btn btn-secondary ms-2" id="limpiarFormulario">Limpiar</button>
-                    <a href="{{ route('empleados.index') }}" class="btn btn-outline-danger ms-2">Cancelar</a>
+                    <button type="submit" class="btn btn-danger">Guardar</button>
+                    <button type="button" class="btn btn-danger" id="limpiarFormulario">Limpiar</button>
+                    <a href="{{ route('empleados.index') }}" class="btn btn-danger">Cancelar</a>
                 </form>
             </div>
         </div>
@@ -241,6 +184,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('formEmpleado');
     const nombreInput = document.getElementById('nombre');
@@ -251,6 +198,43 @@ document.addEventListener('DOMContentLoaded', function() {
     const fechaContratacionInput = document.getElementById('fecha_contratacion');
     const identidadInput = document.getElementById('identidad'); // Added for direct access
     const direccionInput = document.getElementById('direccion'); // Added for direct access
+
+    function formatearIdentidad(input) {
+        // Eliminar todo lo que no sea dígito
+        let valor = input.value.replace(/\D/g, '');
+
+        // Insertar guiones automáticamente en posiciones 4 y 8
+        if (valor.length > 4) valor = valor.slice(0, 4) + '-' + valor.slice(4);
+        if (valor.length > 9) valor = valor.slice(0, 9) + '-' + valor.slice(9);
+
+        // Limitar a 15 caracteres con formato
+        if (valor.length > 15) valor = valor.slice(0, 15);
+
+        input.value = valor;
+
+        // Validaciones
+        const errorDiv = document.getElementById("errorIdentidad");
+        errorDiv.innerText = "";
+
+        // Si ya tiene los 15 caracteres, validar estructura
+        if (valor.length === 15) {
+            const partes = valor.split("-");
+            const depto = parseInt(partes[0].substring(0, 2));
+            const muni  = parseInt(partes[0].substring(2, 4));
+            const anio  = parseInt(partes[1]);
+
+            const anioActual = new Date().getFullYear();
+
+            if (depto < 1 || depto > 18) {
+                errorDiv.innerText = "Departamento inválido (01-18).";
+            } else if (muni < 1 || muni > 28) {
+                errorDiv.innerText = "Municipio inválido (01-28).";
+            } else if (anio > anioActual) {
+                errorDiv.innerText = "El año no puede ser mayor a " + anioActual + ".";
+            }
+        }
+    }
+
 
     // --- Listeners de PREVENCIÓN de entrada en tiempo real ---
 

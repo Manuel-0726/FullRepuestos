@@ -24,8 +24,13 @@
                 </div>
             @endif
 
-            <a href="{{ route('facturas.create') }}" class="btn btn-primary mb-3">+ Nueva factura</a>
 
+
+            <div class="d-flex gap-2 align-items-center mt-3 mb-4">
+                <a href="{{ route('facturas.create') }}" class="btn btn-danger mb-3">+ Nueva factura</a>
+                <a href="{{ route('welcome') }}" class="btn btn-danger mb-3">Inicio</a>
+
+            </div>
             <div class="table-responsive">
                 <table class="table table-dark table-striped table-hover text-center align-middle">
                     <thead>
@@ -43,7 +48,7 @@
                         <tr>
                             <td>{{ $loop->iteration + ($facturas->currentPage() - 1) * $facturas->perPage() }}</td>
                             <td>{{ $factura->codigo }}</td> {{-- Mostrar el código de la factura --}}
-                            <td>{{ $factura->cliente }}</td>
+                            <td>{{ $factura->cliente ? $factura->cliente->nombre . ' ' . $factura->cliente->apellido : 'Sin cliente' }}</td>
                             <td>{{ $factura->fecha ? \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') : '' }}</td>
                             <td>L. {{ number_format($factura->total, 2) }}</td>
                             <td>
@@ -71,69 +76,9 @@
                 {{ $facturas->links('vendor.pagination.bootstrap-5') }}
             </div>
 
-            <div class="d-flex gap-2 align-items-center mt-3 mb-4">
-                <a href="{{ route('welcome') }}" class="btn btn-outline-light">Inicio</a>
-                <button type="button" class="btn btn-outline-light" onclick="window.history.back();">Volver</button>
-            </div>
+
         </div>
     </div>
 @endsection
 
-<style>
-    /* Estilos generales para el fondo y texto */
-    body {
-        background-color: #343a40; /* Fondo oscuro */
-        color: #f8f9fa; /* Texto claro */
-    }
-    .table-container {
-        background-color: #212529; /* Contenedor de tabla con fondo un poco más oscuro */
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-    .table-dark th, .table-dark td {
-        border-color: #454d55; /* Bordes de tabla más claros */
-    }
-    .btn-primary {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
-    .btn-primary:hover {
-        background-color: #0b5ed7;
-        border-color: #0a58ca;
-    }
-    .btn-info {
-        background-color: #0dcaf0;
-        border-color: #0dcaf0;
-        color: #212529; /* Texto oscuro para botón info */
-    }
-    .btn-info:hover {
-        background-color: #31d2f2;
-        border-color: #25cff2;
-    }
-    .btn-warning {
-        background-color: #ffc107;
-        border-color: #ffc107;
-        color: #212529; /* Texto oscuro para botón warning */
-    }
-    .btn-warning:hover {
-        background-color: #e0a800;
-        border-color: #e0a800;
-    }
-    .btn-danger {
-        background-color: #dc3545;
-        border-color: #dc3545;
-    }
-    .btn-danger:hover {
-        background-color: #bb2d3b;
-        border-color: #b02a37;
-    }
-    .btn-outline-light {
-        color: #f8f9fa;
-        border-color: #f8f9fa;
-    }
-    .btn-outline-light:hover {
-        color: #212529;
-        background-color: #f8f9fa;
-    }
-</style>
+

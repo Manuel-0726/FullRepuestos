@@ -1,3 +1,4 @@
+@extends('layouts.app')
 <div class="modal fade" id="createFacturaModal" tabindex="-1" aria-labelledby="createFacturaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content bg-dark text-white">
@@ -281,31 +282,4 @@
     });
 </script>
 
-<style>
-    /* Estilo para el color del placeholder en campos oscuros */
-    .form-control.bg-dark.text-white::placeholder {
-        color: rgba(255, 255, 255, 0.7) !important; /* Blanco con un poco de transparencia */
-    }
-    /* Asegura que el texto del input también sea blanco y el fondo oscuro */
-    .form-control.bg-dark.text-white {
-        color: #fff !important;
-        background-color: #343a40 !important; /* Fondo oscuro específico */
-    }
-    /* Para el input de fecha, asegurar el color del texto */
-    input[type="date"].bg-dark.text-white {
-        color: #fff !important;
-    }
-    /* Ajuste para el icono del calendario en input type="date" */
-    input[type="date"].bg-dark.text-white::-webkit-calendar-picker-indicator {
-        filter: invert(1); /* Invierte el color del icono del calendario a blanco */
-    }
-    /* Asegurar que las opciones del select también tengan fondo oscuro y texto blanco */
-    .form-select.bg-dark.text-white {
-        color: #fff !important;
-        background-color: #343a40 !important;
-    }
-    .form-select.bg-dark.text-white option {
-        background-color: #343a40 !important; /* Fondo oscuro para las opciones del select */
-        color: #fff !important; /* Texto blanco para las opciones del select */
-    }
-</style>
+
