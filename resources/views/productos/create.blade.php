@@ -133,6 +133,7 @@
 
                     <div class="d-flex gap-3">
                         <button type="submit" class="btn btn-danger">Registrar</button>
+                        <button type="button" class="btn btn-danger" id="limpiarFormulario">Limpiar</button>
                         <a href="{{ route('productos.index') }}" class="btn btn-danger">Cancelar</a>
                     </div>
                 </form>
@@ -140,5 +141,44 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get references to the form elements
+        const form = document.getElementById('formProducto');
+        const clearButton = document.getElementById('limpiarFormulario');
+        const nombreInput = document.getElementById('nombre');
+        const descripcionInput = document.getElementById('descripcion');
+
+        // Add functionality to the "Limpiar" button
+        clearButton.addEventListener('click', function () {
+            // Reset the form fields
+            form.reset();
+
+            // Clear validation messages (divs with class 'text-danger')
+            const errorMessages = document.querySelectorAll('.text-danger');
+            errorMessages.forEach(msg => {
+                msg.remove();
+            });
+
+            // Clear 'is-invalid' class from input fields to remove the red border
+            const invalidInputs = document.querySelectorAll('.is-invalid');
+            invalidInputs.forEach(input => {
+                input.classList.remove('is-invalid');
+            });
+        });
+
+        // Prevent leading spaces in 'nombre' input
+        nombreInput.addEventListener('input', function() {
+            this.value = this.value.trimStart();
+        });
+
+        // Prevent leading spaces in 'descripcion' textarea
+        descripcionInput.addEventListener('input', function() {
+            this.value = this.value.trimStart();
+        });
+    });
+</script>
+
 </body>
 </html>

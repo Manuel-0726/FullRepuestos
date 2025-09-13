@@ -1,11 +1,11 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
         <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <title>Registrar Cliente</title>
+    <title>Editar cliente</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
@@ -15,121 +15,230 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="form-container">
-                <h2 class="mb-4 text-white">Registrar un Cliente</h2>
+                <h2 class="mb-4 text-white">Editar cliente</h2>
 
-                @if (session('success'))
+                <?php if(session('success')): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
+                        <?php echo e(session('success')); ?>
 
-                {{-- Action del formulario, corregido a 'cliente.store' --}}
-                <form id="formCliente" action="{{ route('cliente.store') }}" method="POST" novalidate>
-                    @csrf
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+                <?php if(session('error')): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?php echo e(session('error')); ?>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                
+                <form id="formCliente" action="<?php echo e(route('cliente.update', $cliente->id)); ?>" method="POST" novalidate>
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('PUT'); ?> 
 
                     <div class="row">
                         <div class="mb-3 col-md-6">
                             <label for="nombre" class="form-label text-white">Nombre:</label>
-                            <input type="text" class=" form-control bg-dark text-white @error('nombre') is-invalid @enderror" id="nombre" name="nombre" value="{{ old('nombre') }}" required maxlength="30" autocomplete="off" />
+                            <input type="text" class="form-control bg-dark text-white  <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="nombre" name="nombre" value="<?php echo e(old('nombre', $cliente->nombre)); ?>" required maxlength="30" autocomplete="off" />
                             <div class="invalid-feedback" id="nombre-feedback">
-                                @error('nombre')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     El nombre es requerido.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="apellido" class="form-label text-white">Apellido:</label>
-                            <input type="text" class="form-control bg-dark text-white @error('apellido') is-invalid @enderror" id="apellido" name="apellido" value="{{ old('apellido') }}" required maxlength="30" autocomplete="off" />
+                            <input type="text" class="form-control bg-dark text-white  <?php $__errorArgs = ['apellido'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="apellido" name="apellido" value="<?php echo e(old('apellido', $cliente->apellido)); ?>" required maxlength="30" autocomplete="off" />
                             <div class="invalid-feedback" id="apellido-feedback">
-                                @error('apellido')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['apellido'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     El apellido es requerido.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="correo" class="form-label text-white">Correo:</label>
-                            <input type="email" class="form-control bg-dark text-white @error('correo') is-invalid @enderror" id="correo" name="correo" value="{{ old('correo') }}" required maxlength="30" autocomplete="off" />
+                            <input type="email" class="form-control bg-dark text-white  <?php $__errorArgs = ['correo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="correo" name="correo" value="<?php echo e(old('correo', $cliente->correo)); ?>" required maxlength="30" autocomplete="off" />
                             <div class="invalid-feedback" id="correo-feedback">
-                                @error('correo')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['correo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     El correo es requerido.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="telefono" class="form-label text-white">Teléfono:</label>
-                            <input type="text" class="form-control bg-dark text-white @error('telefono') is-invalid @enderror" id="telefono" name="telefono" value="{{ old('telefono') }}" maxlength="8" autocomplete="off" />
+                            
+                            <input type="text" class="form-control bg-dark text-white  <?php $__errorArgs = ['telefono'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="telefono" name="telefono" value="<?php echo e(old('telefono', $cliente->telefono)); ?>" maxlength="11" autocomplete="off" />
                             <div class="invalid-feedback" id="telefono-feedback">
-                                @error('telefono')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['telefono'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     El teléfono es requerido.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="identidad" class="form-label text-white">Número de Identidad:</label>
-                            <input type="text" class="form-control bg-dark text-white @error('identidad') is-invalid @enderror" id="identidad" name="identidad" value="{{ old('identidad') }}" maxlength="15" required autocomplete="off"
+                            <input type="text" class="form-control bg-dark text-white  <?php $__errorArgs = ['identidad'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="identidad" name="identidad" value="<?php echo e(old('identidad', $cliente->identidad)); ?>" maxlength="15" required autocomplete="off"
                                    title="Debe ingresar 13 dígitos numéricos en formato ####-####-#####" />
                             <div class="invalid-feedback" id="identidad-feedback">
-                                @error('identidad')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['identidad'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     El número de identidad es requerido.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="direccion" class="form-label text-white">Dirección:</label>
-                            <textarea class="form-control bg-dark text-white @error('direccion') is-invalid @enderror" id="direccion" name="direccion" required maxlength="100" rows="3" autocomplete="off">{{ old('direccion') }}</textarea>
+                            <textarea class="form-control bg-dark text-white  <?php $__errorArgs = ['direccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="direccion" name="direccion" required maxlength="100" rows="3" autocomplete="off"><?php echo e(old('direccion', $cliente->direccion)); ?></textarea>
                             <div class="invalid-feedback" id="direccion-feedback">
-                                @error('direccion')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['direccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     La dirección es requerida.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="sexo" class="form-label text-white">Sexo:</label>
-                            <select class="form-control bg-dark text-white @error('sexo') is-invalid @enderror" id="sexo" name="sexo" required>
+                            <select class="form-control bg-dark text-white  <?php $__errorArgs = ['sexo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="sexo" name="sexo" required>
                                 <option value="">Seleccione...</option>
-                                <option value="Masculino" {{ old('sexo') == 'Masculino' ? 'selected' : '' }}>Masculino</option>
-                                <option value="Femenino" {{ old('sexo') == 'Femenino' ? 'selected' : '' }}>Femenino</option>
-                                <option value="Otro" {{ old('sexo') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                                <option value="Masculino" <?php echo e(old('sexo', $cliente->sexo) == 'Masculino' ? 'selected' : ''); ?>>Masculino</option>
+                                <option value="Femenino" <?php echo e(old('sexo', $cliente->sexo) == 'Femenino' ? 'selected' : ''); ?>>Femenino</option>
+                                <option value="Otro" <?php echo e(old('sexo', $cliente->sexo) == 'Otro' ? 'selected' : ''); ?>>Otro</option>
                             </select>
                             <div class="invalid-feedback">
-                                @error('sexo')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['sexo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     Por favor, seleccione una opción.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-danger">Guardar</button>
-                    <button type="button" class="btn btn-danger" id="limpiarFormulario">Limpiar</button>
-                    {{-- Botón Cancelar, corregido a 'cliente.menu' --}}
-                    <a href="{{ route('cliente.index') }}" class="btn btn-danger">Cancelar</a>
+                    <button type="submit" class="btn btn-danger">Actualizar</button>
+                    <button type="reset" class="btn btn-danger">Restablecer</button>
+                    
+                    <a href="<?php echo e(route('cliente.index')); ?>" class="btn btn-danger">Cancelar</a>
                 </form>
             </div>
         </div>
@@ -146,7 +255,6 @@
         const correoInput = document.getElementById('correo');
         const identidadInput = document.getElementById('identidad');
         const direccionInput = document.getElementById('direccion');
-        const sexoInput = document.getElementById('sexo');
 
         // --- Listeners de PREVENCIÓN de entrada en tiempo real ---
 
@@ -175,7 +283,8 @@
 
         // Teléfono: Limitar a 8 dígitos y solo números
         telefonoInput.addEventListener('input', function (e) {
-            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 8);
+            // Permite hasta 11 dígitos, solo números
+            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 11); // CAMBIADO A 11
         });
 
         // Identidad: Formateo automático
@@ -208,14 +317,6 @@
                     element.style.display = 'none';
                 }
             });
-
-            // Trim leading spaces from all text-based inputs before validation
-            nombreInput.value = nombreInput.value.trimStart();
-            apellidoInput.value = apellidoInput.value.trimStart();
-            correoInput.value = correoInput.value.trimStart();
-            telefonoInput.value = telefonoInput.value.trimStart();
-            identidadInput.value = identidadInput.value.trimStart();
-            direccionInput.value = direccionInput.value.trimStart();
 
             // Validaciones para Nombre
             const nombre = nombreInput.value.trim();
@@ -263,7 +364,8 @@
 
             // Validaciones para Teléfono
             const telefono = telefonoInput.value.trim();
-            const regexTelefonoInicio = /^[2389]\d{7}$/;
+            // Permite de 7 a 11 dígitos y debe empezar con 2, 3, 8 o 9
+            const regexTelefonoInicio = /^[2389]\d{6,10}$/; // CAMBIADO A {6,10}
 
             if (telefono.length === 0) {
                 telefonoInput.classList.add('is-invalid');
@@ -272,7 +374,8 @@
                 formIsValid = false;
             } else if (!regexTelefonoInicio.test(telefono)) {
                 telefonoInput.classList.add('is-invalid');
-                document.getElementById('telefono-feedback').textContent = 'El teléfono debe tener 8 dígitos y comenzar con 2, 3, 8 o 9.';
+                // MENSAJE DE VALIDACIÓN ACTUALIZADO
+                document.getElementById('telefono-feedback').textContent = 'El teléfono debe tener entre 7 y 11 dígitos y comenzar con 2, 3, 8 o 9.';
                 document.getElementById('telefono-feedback').style.display = 'block';
                 formIsValid = false;
             }
@@ -302,7 +405,7 @@
                         identidadFeedback.style.display = 'block';
                         formIsValid = false;
                     }
-                } else { // Si después de quitar guiones no tiene 13 dígitos
+                } else {
                     identidadInput.classList.add('is-invalid');
                     identidadFeedback.textContent = 'El número de identidad debe tener 13 dígitos.';
                     identidadFeedback.style.display = 'block';
@@ -326,6 +429,7 @@
             }
 
             // Validaciones para select (Sexo)
+            const sexoInput = document.getElementById('sexo');
             if (!sexoInput.value) {
                 sexoInput.classList.add('is-invalid');
                 sexoInput.nextElementSibling.style.display = 'block';
@@ -333,22 +437,20 @@
             }
 
             if (!formIsValid) {
-                event.preventDefault(); // Evita que el formulario se envíe si hay errores
+                event.preventDefault();
             }
         }); // Cierra submit listener
 
         // --- Funcionalidad del botón Limpiar ---
         document.getElementById('limpiarFormulario').addEventListener('click', function() { // Abre limpiarFormulario listener
-            form.reset(); // Restablece todos los campos del formulario a sus valores iniciales
-            // Limpiar estilos de validación y restablecer mensajes de feedback
+            form.reset();
             document.querySelectorAll('.is-invalid').forEach(element => {
                 element.classList.remove('is-invalid');
             });
             document.querySelectorAll('.invalid-feedback').forEach(element => {
                 element.style.display = 'none';
-                element.removeAttribute('data-laravel-error'); // Quita el marcador de error de Laravel
+                element.removeAttribute('data-laravel-error');
 
-                // Restablecer el texto de feedback a su estado inicial
                 if (element.id === 'nombre-feedback') {
                     element.textContent = 'El nombre es requerido.';
                 } else if (element.id === 'apellido-feedback') {
@@ -356,33 +458,27 @@
                 } else if (element.id === 'correo-feedback') {
                     element.textContent = 'El correo es requerido.';
                 } else if (element.id === 'telefono-feedback') {
+                    // MENSAJE DE VALIDACIÓN ACTUALIZADO
                     element.textContent = 'El teléfono es requerido.';
                 } else if (element.id === 'identidad-feedback') {
                     element.textContent = 'El número de identidad es requerido.';
                 } else if (element.id === 'direccion-feedback') {
                     element.textContent = 'La dirección es requerida.';
                 } else if (element.previousElementSibling && element.previousElementSibling.tagName === 'SELECT') {
-                    // Para los selects, restablecer el mensaje genérico
                     element.textContent = 'Por favor, seleccione una opción.';
                 }
             });
         }); // Cierra limpiarFormulario listener
 
-        // --- Listener general para limpiar validación cuando el usuario corrige o el campo ya no está vacío ---
+        // --- Listener general para limpiar validación cuando el usuario corrige ---
         document.querySelectorAll('.form-control').forEach(input => { // Abre forEach input
             input.addEventListener('input', function() { // Abre input listener
-                // Trim leading spaces for all text inputs
-                this.value = this.value.trimStart();
-
-                // Solo limpiar la clase si el campo ya no está vacío (o si se ha corregido el formato)
                 if (this.classList.contains('is-invalid')) {
-                    // Lógica específica para identidad si se borran los guiones y se vuelve a escribir correctamente
                     if (this.id === 'identidad') {
                         const identidadVal = this.value.trim();
                         const soloDigitos = identidadVal.replace(/-/g, '');
-                        const regexIdentidad = /^\d{4}-\d{4}-\d{5}$/; // Regex para el formato con guiones
+                        const regexIdentidad = /^\d{4}-\d{4}-\d{5}$/;
 
-                        // Si el formato es correcto, tiene 13 dígitos y los primeros dos son <= 18
                         if (regexIdentidad.test(identidadVal) && soloDigitos.length === 13 && parseInt(soloDigitos.substring(0, 2), 10) <= 18) {
                             this.classList.remove('is-invalid');
                             const feedbackElement = document.getElementById(this.id + '-feedback');
@@ -390,7 +486,7 @@
                                 feedbackElement.style.display = 'none';
                                 feedbackElement.removeAttribute('data-laravel-error');
                             }
-                        } else if (identidadVal.length === 0) { // Si el campo está vacío, limpiar también
+                        } else if (identidadVal.length === 0) {
                             this.classList.remove('is-invalid');
                             const feedbackElement = document.getElementById(this.id + '-feedback');
                             if (feedbackElement) {
@@ -398,9 +494,9 @@
                                 feedbackElement.removeAttribute('data-laravel-error');
                             }
                         }
-                        // Si no cumple las condiciones de arriba, no limpiar la validación
                     } else if (this.id === 'telefono') {
-                        const regexTelefonoInicio = /^[2389]\d{7}$/;
+                        // VALIDACIÓN ACTUALIZADA PARA LIMPIAR LA CLASE
+                        const regexTelefonoInicio = /^[2389]\d{6,10}$/; // CAMBIADO A {6,10}
                         if (regexTelefonoInicio.test(this.value.trim()) || this.value.trim().length === 0) {
                             this.classList.remove('is-invalid');
                             const feedbackElement = document.getElementById(this.id + '-feedback');
@@ -420,7 +516,6 @@
                             }
                         }
                     } else {
-                        // Para otros campos de texto/número, simplemente limpiar si no está vacío
                         if (this.value.trim().length > 0) {
                             this.classList.remove('is-invalid');
                             const feedbackElement = document.getElementById(this.id + '-feedback');
@@ -432,9 +527,12 @@
                     }
                 }
             }); // Cierra input listener
-        }); // Cierra forEach input
-    }); // Cierre del DOMContentLoaded
+        }); // Cierre del DOMContentLoaded
+    });
 </script>
 </body>
 </html>
-@endsection
+<?php $__env->stopSection(); ?>
+
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\FullRepuestos\resources\views/cliente/edit.blade.php ENDPATH**/ ?>

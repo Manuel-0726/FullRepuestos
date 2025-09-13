@@ -1,6 +1,6 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
         <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,119 +17,226 @@
             <div class="form-container">
                 <h2 class="mb-4 text-white">Registrar un Cliente</h2>
 
-                @if (session('success'))
+                <?php if(session('success')): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
+                        <?php echo e(session('success')); ?>
 
-                {{-- Action del formulario, corregido a 'cliente.store' --}}
-                <form id="formCliente" action="{{ route('cliente.store') }}" method="POST" novalidate>
-                    @csrf
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+                <?php if(session('error')): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?php echo e(session('error')); ?>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                
+                <form id="formCliente" action="<?php echo e(route('cliente.store')); ?>" method="POST" novalidate>
+                    <?php echo csrf_field(); ?>
 
                     <div class="row">
                         <div class="mb-3 col-md-6">
                             <label for="nombre" class="form-label text-white">Nombre:</label>
-                            <input type="text" class=" form-control bg-dark text-white @error('nombre') is-invalid @enderror" id="nombre" name="nombre" value="{{ old('nombre') }}" required maxlength="30" autocomplete="off" />
+                            <input type="text" class=" form-control bg-dark text-white <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="nombre" name="nombre" value="<?php echo e(old('nombre')); ?>" required maxlength="30" autocomplete="off" />
                             <div class="invalid-feedback" id="nombre-feedback">
-                                @error('nombre')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     El nombre es requerido.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="apellido" class="form-label text-white">Apellido:</label>
-                            <input type="text" class="form-control bg-dark text-white @error('apellido') is-invalid @enderror" id="apellido" name="apellido" value="{{ old('apellido') }}" required maxlength="30" autocomplete="off" />
+                            <input type="text" class="form-control bg-dark text-white <?php $__errorArgs = ['apellido'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="apellido" name="apellido" value="<?php echo e(old('apellido')); ?>" required maxlength="30" autocomplete="off" />
                             <div class="invalid-feedback" id="apellido-feedback">
-                                @error('apellido')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['apellido'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     El apellido es requerido.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="correo" class="form-label text-white">Correo:</label>
-                            <input type="email" class="form-control bg-dark text-white @error('correo') is-invalid @enderror" id="correo" name="correo" value="{{ old('correo') }}" required maxlength="30" autocomplete="off" />
+                            <input type="email" class="form-control bg-dark text-white <?php $__errorArgs = ['correo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="correo" name="correo" value="<?php echo e(old('correo')); ?>" required maxlength="30" autocomplete="off" />
                             <div class="invalid-feedback" id="correo-feedback">
-                                @error('correo')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['correo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     El correo es requerido.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="telefono" class="form-label text-white">Teléfono:</label>
-                            <input type="text" class="form-control bg-dark text-white @error('telefono') is-invalid @enderror" id="telefono" name="telefono" value="{{ old('telefono') }}" maxlength="8" autocomplete="off" />
+                            <input type="text" class="form-control bg-dark text-white <?php $__errorArgs = ['telefono'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="telefono" name="telefono" value="<?php echo e(old('telefono')); ?>" maxlength="8" autocomplete="off" />
                             <div class="invalid-feedback" id="telefono-feedback">
-                                @error('telefono')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['telefono'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     El teléfono es requerido.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="identidad" class="form-label text-white">Número de Identidad:</label>
-                            <input type="text" class="form-control bg-dark text-white @error('identidad') is-invalid @enderror" id="identidad" name="identidad" value="{{ old('identidad') }}" maxlength="15" required autocomplete="off"
+                            <input type="text" class="form-control bg-dark text-white <?php $__errorArgs = ['identidad'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="identidad" name="identidad" value="<?php echo e(old('identidad')); ?>" maxlength="15" required autocomplete="off"
                                    title="Debe ingresar 13 dígitos numéricos en formato ####-####-#####" />
                             <div class="invalid-feedback" id="identidad-feedback">
-                                @error('identidad')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['identidad'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     El número de identidad es requerido.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="direccion" class="form-label text-white">Dirección:</label>
-                            <textarea class="form-control bg-dark text-white @error('direccion') is-invalid @enderror" id="direccion" name="direccion" required maxlength="100" rows="3" autocomplete="off">{{ old('direccion') }}</textarea>
+                            <textarea class="form-control bg-dark text-white <?php $__errorArgs = ['direccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="direccion" name="direccion" required maxlength="100" rows="3" autocomplete="off"><?php echo e(old('direccion')); ?></textarea>
                             <div class="invalid-feedback" id="direccion-feedback">
-                                @error('direccion')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['direccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     La dirección es requerida.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="sexo" class="form-label text-white">Sexo:</label>
-                            <select class="form-control bg-dark text-white @error('sexo') is-invalid @enderror" id="sexo" name="sexo" required>
+                            <select class="form-control bg-dark text-white <?php $__errorArgs = ['sexo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="sexo" name="sexo" required>
                                 <option value="">Seleccione...</option>
-                                <option value="Masculino" {{ old('sexo') == 'Masculino' ? 'selected' : '' }}>Masculino</option>
-                                <option value="Femenino" {{ old('sexo') == 'Femenino' ? 'selected' : '' }}>Femenino</option>
-                                <option value="Otro" {{ old('sexo') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                                <option value="Masculino" <?php echo e(old('sexo') == 'Masculino' ? 'selected' : ''); ?>>Masculino</option>
+                                <option value="Femenino" <?php echo e(old('sexo') == 'Femenino' ? 'selected' : ''); ?>>Femenino</option>
+                                <option value="Otro" <?php echo e(old('sexo') == 'Otro' ? 'selected' : ''); ?>>Otro</option>
                             </select>
                             <div class="invalid-feedback">
-                                @error('sexo')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['sexo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     Por favor, seleccione una opción.
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
                     </div>
 
                     <button type="submit" class="btn btn-danger">Guardar</button>
                     <button type="button" class="btn btn-danger" id="limpiarFormulario">Limpiar</button>
-                    {{-- Botón Cancelar, corregido a 'cliente.menu' --}}
-                    <a href="{{ route('cliente.index') }}" class="btn btn-danger">Cancelar</a>
+                    
+                    <a href="<?php echo e(route('cliente.index')); ?>" class="btn btn-danger">Cancelar</a>
                 </form>
             </div>
         </div>
@@ -437,4 +544,6 @@
 </script>
 </body>
 </html>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\FullRepuestos\resources\views/cliente/create.blade.php ENDPATH**/ ?>
