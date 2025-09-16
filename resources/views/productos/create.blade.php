@@ -17,6 +17,7 @@
                 <form id="formProducto" action="{{ route('productos.store') }}" method="POST" novalidate>
                     @csrf
                     <div class="row">
+                        <!-- Nombre -->
                         <div class="mb-3 col-md-6">
                             <label for="nombre" class="form-label">Nombre:</label>
                             <input
@@ -26,29 +27,17 @@
                                     name="nombre"
                                     value="{{ old('nombre') }}"
                                     required
+                                    maxlength="60"
+                                    onkeydown="return evitarEspaciosInicio(this, event)"
                             />
                             @error('nombre')
                             <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="mb-3 col-md-6">
-                            <label for="stock" class="form-label">Cantidad en stock</label>
-                            <input type="number" name="stock" id="stock" class="form-control @error('stock') is-invalid @enderror" min="0" required value="{{ old('stock', $producto->stock ?? 0) }}">
-                            @error('stock')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
 
-                        <div class="mb-3 col-md-6">
-                            <label for="precio_venta" class="form-label">Precio de Venta</label>
-                            <input type="number" id="precio_venta" name="precio_venta" value="{{ old('precio_venta') }}"
-                                   class="form-control @error('precio_venta') is-invalid @enderror" step="0.01" min="0" required>
-                            @error('precio_venta')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
 
+                        <!-- Modelo -->
                         <div class="mb-3 col-md-6">
                             <label for="modelo" class="form-label">Modelo:</label>
                             <input
@@ -58,12 +47,16 @@
                                     name="modelo"
                                     value="{{ old('modelo') }}"
                                     required
+                                    maxlength="60"
+                                    pattern="^[A-Za-z0-9\-]+$"
+                                    onkeydown="return evitarEspaciosInicio(this, event)"
                             />
                             @error('modelo')
                             <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </div>
 
+                        <!-- Marca -->
                         <div class="mb-3 col-md-6">
                             <label for="marca" class="form-label">Marca:</label>
                             <select class="form-control @error('marca') is-invalid @enderror" id="marca" name="marca" required>
@@ -80,6 +73,7 @@
                             @enderror
                         </div>
 
+                        <!-- Año -->
                         <div class="mb-3 col-md-6">
                             <label for="anio" class="form-label">Año:</label>
                             <input
@@ -91,12 +85,14 @@
                                     required
                                     min="1990"
                                     max="{{ date('Y') }}"
+                                    oninput="validarAnio(this)"
                             />
                             @error('anio')
                             <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </div>
 
+                        <!-- Categoría -->
                         <div class="mb-3 col-md-6">
                             <label for="categoria" class="form-label">Categoría:</label>
                             <select class="form-control @error('categoria') is-invalid @enderror" id="categoria" name="categoria" required>
@@ -115,6 +111,7 @@
                             @enderror
                         </div>
 
+                        <!-- Descripción -->
                         <div class="mb-3 col-12">
                             <label for="descripcion" class="form-label">Descripción:</label>
                             <textarea
@@ -122,8 +119,9 @@
                                     id="descripcion"
                                     name="descripcion"
                                     required
-                                    maxlength="100"
+                                    maxlength="250"
                                     rows="3"
+                                    onkeydown="return evitarEspaciosInicio(this, event)"
                             >{{ old('descripcion') }}</textarea>
                             @error('descripcion')
                             <div class="text-danger mt-1">{{ $message }}</div>
@@ -140,5 +138,26 @@
         </div>
     </div>
 </div>
+
+<!-- JS validaciones extra -->
+<script>
+    // Evitar espacios al inicio
+    function evitarEspaciosInicio(input, event) {
+        if (event.key === " " && input.selectionStart === 0) {
+            event.preventDefault();
+            return false;
+        }
+        return true;
+    }
+
+    // Validar campo año: solo 4 dígitos
+    function validarAnio(input) {
+        let valor = input.value.replace(/\D/g, ""); // solo números
+        if (valor.length > 4) {
+            valor = valor.slice(0, 4);
+        }
+        input.value = valor;
+    }
+</script>
 </body>
 </html>

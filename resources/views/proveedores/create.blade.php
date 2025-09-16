@@ -122,11 +122,10 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="marcas" class="form-label">Marcas que maneja *</label>
+                        <div class="mb-3 col-md-6">
+                            <label for="marcas" class="form-label text-white">Marcas que maneja *</label>
                             <select name="marcas[]" id="marcas" multiple required
-                                    class="form-select bg-dark text-white @error('marcas') is-invalid @enderror"
-                                    style="background-color: #343a40 !important; color: #fff !important;">
+                                    class="form-control bg-dark text-white border-secondary @error('marcas') is-invalid @enderror">
                                 <option value="" disabled>Seleccione marcas...</option>
                                 <option value="Toyota" {{ in_array('Toyota', old('marcas', [])) ? 'selected' : '' }}>Toyota</option>
                                 <option value="Honda" {{ in_array('Honda', old('marcas', [])) ? 'selected' : '' }}>Honda</option>
@@ -151,8 +150,8 @@
 
 
                         <div class="col-md-6 mb-3">
-                            <label for="tipo_autopartes" class="form-label">Tipo de Autopartes *</label>
-                            <select class="form-select @error('tipo_autopartes') is-invalid @enderror"
+                            <label for="tipo_autopartes" class="form-label text-white">Tipo de Autopartes *</label>
+                            <select class="form-control bg-dark text-white @error('tipo_autopartes') is-invalid @enderror"
                                     id="tipo_autopartes" name="tipo_autopartes[]" multiple required>
                                 <option value="">Seleccione tipos de autopartes...</option>
                                 <option value="Motor" {{ in_array('Motor', old('tipo_autopartes', [])) ? 'selected' : '' }}>Motor</option>

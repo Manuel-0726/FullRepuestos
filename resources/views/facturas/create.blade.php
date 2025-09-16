@@ -221,23 +221,40 @@
 
                     const fila = document.createElement('tr');
                     fila.dataset.id = id;
-                    fila.innerHTML = `
-                        <td>${nombre}<input type="hidden" name="detalles[${indiceDetalle}][producto_id]" value="${id}"></td>
-                        <td>${marca}</td>
-                        <td>${modelo}</td>
-                        <td>${anio}</td>
-                        <td><input type="number" name="detalles[${indiceDetalle}][cantidad]" value="${cantidad}" min="1" max="${stock}" class="form-control cantidad-seleccionada" style="width: 80px;" required></td>
-                        <td>${precio.toFixed(2)}<input type="hidden" name="detalles[${indiceDetalle}][precio_unitario]" value="${precio.toFixed(2)}"></td>
-                        <td>${ivaLempiras.toFixed(2)}<input type="hidden" name="detalles[${indiceDetalle}][iva]" value="${ivaLempiras.toFixed(2)}"></td>
-                        <td class="subtotal">${(subtotal + ivaLempiras).toFixed(2)}</td>
-                        <td><button type="button" class="btn btn-danger btn-sm btn-eliminar-producto">Eliminar</button></td>
-                    `;
-                    productosSeleccionadosBody.appendChild(fila);
 
+                    fila.innerHTML = `
+            <td class="indice">#</td>
+            <td>${nombre}<input type="hidden" name="detalles[${indiceDetalle}][producto_id]" value="${id}"></td>
+            <td>${marca}</td>
+            <td>${modelo}</td>
+            <td>${anio}</td>
+            <td>
+                <input type="number" name="detalles[${indiceDetalle}][cantidad]" value="${cantidad}" min="1" max="${stock}" class="form-control cantidad-seleccionada" style="width: 80px;" required>
+            </td>
+            <td>
+                ${precio.toFixed(2)}<input type="hidden" name="detalles[${indiceDetalle}][precio_unitario]" value="${precio.toFixed(2)}">
+            </td>
+            <td>
+                ${ivaLempiras.toFixed(2)}<input type="hidden" name="detalles[${indiceDetalle}][iva]" value="${ivaLempiras.toFixed(2)}">
+            </td>
+            <td class="subtotal">${(subtotal + ivaLempiras).toFixed(2)}</td>
+            <td><button type="button" class="btn btn-danger btn-sm btn-eliminar-producto">Eliminar</button></td>
+        `;
+
+                    productosSeleccionadosBody.appendChild(fila);
+                    actualizarIndices(); // Función para actualizar el # de cada fila
                     indiceDetalle++;
                     actualizarTotales();
                 }
             });
+
+// Función para recalcular los números de la columna #
+            function actualizarIndices() {
+                productosSeleccionadosBody.querySelectorAll('tr').forEach((fila, idx) => {
+                    fila.querySelector('.indice').textContent = idx + 1;
+                });
+            }
+
 
             productosSeleccionadosBody.addEventListener('click', function (e) {
                 if (e.target.classList.contains('btn-eliminar-producto')) {
