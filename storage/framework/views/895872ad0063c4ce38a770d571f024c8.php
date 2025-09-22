@@ -1,6 +1,6 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
     <div class="container text-white-justify-center">
 
         <h2 class="mb-3">Registrar factura de compra</h2> <!-- margen inferior pequeño -->
@@ -9,35 +9,37 @@
     </div>
 
 
-    @if (session('error'))
+    <?php if(session('error')): ?>
         <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
+            <?php echo e(session('error')); ?>
 
-    @if ($errors->any())
+        </div>
+    <?php endif; ?>
+
+    <?php if($errors->any()): ?>
         <div class="alert alert-danger">
             <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </ul>
         </div>
-    @endif
+    <?php endif; ?>
 
-    <form action="{{ route('facturas-compra.store') }}" method="POST" id="formFactura">
-        @csrf
+    <form action="<?php echo e(route('facturas-compra.store')); ?>" method="POST" id="formFactura">
+        <?php echo csrf_field(); ?>
 
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="empleado_id" class="form-label">Empleado</label>
                 <select name="empleado_id" id="empleado_id" class="form-select">
                     <option value="">Seleccione un empleado</option>
-                    @foreach($empleados as $empleado)
-                        <option value="{{ $empleado->id }}" {{ old('empleado_id') == $empleado->id ? 'selected' : '' }}>
-                            {{ $empleado->nombre }}
+                    <?php $__currentLoopData = $empleados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $empleado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($empleado->id); ?>" <?php echo e(old('empleado_id') == $empleado->id ? 'selected' : ''); ?>>
+                            <?php echo e($empleado->nombre); ?>
+
                         </option>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
                 <div class="text-danger mt-1" id="empleado_id-error" style="display:none;">Seleccione un empleado.</div>
             </div>
@@ -45,11 +47,12 @@
                 <label for="proveedor_id" class="form-label">Proveedor</label>
                 <select name="proveedor_id" id="proveedor_id" class="form-select">
                     <option value="">Seleccione un proveedor</option>
-                    @foreach($proveedores as $proveedor)
-                        <option value="{{ $proveedor->id }}" {{ old('proveedor_id') == $proveedor->id ? 'selected' : '' }}>
-                            {{ $proveedor->nombre_empresa }}
+                    <?php $__currentLoopData = $proveedores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $proveedor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($proveedor->id); ?>" <?php echo e(old('proveedor_id') == $proveedor->id ? 'selected' : ''); ?>>
+                            <?php echo e($proveedor->nombre_empresa); ?>
+
                         </option>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
                 <div class="text-danger mt-1" id="proveedor_id-error" style="display:none;">Seleccione un proveedor.</div>
             </div>
@@ -58,12 +61,12 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="codigo" class="form-label">Código de Factura</label>
-                <input type="text" name="codigo" id="codigo" class="form-control" value="{{ old('codigo') }}" maxlength="12">
+                <input type="text" name="codigo" id="codigo" class="form-control" value="<?php echo e(old('codigo')); ?>" maxlength="12">
                 <div class="text-danger mt-1" id="codigo-error" style="display:none;">El codigo de la factura es necesario.</div>
             </div>
             <div class="col-md-6">
                 <label for="fecha" class="form-label">Fecha de Compra</label>
-                <input type="date" name="fecha" id="fecha" class="form-control" value="{{ old('fecha', date('Y-m-d')) }}">
+                <input type="date" name="fecha" id="fecha" class="form-control" value="<?php echo e(old('fecha', date('Y-m-d'))); ?>">
                 <div class="text-danger mt-1" id="fecha-error" style="display:none;">Este campo es necesario.</div>
             </div>
         </div>
@@ -100,7 +103,7 @@
         <div class="row mb-3">
             <div class="col-md-4">
                 <label for="observaciones" class="form-label">Observaciones</label>
-                <textarea name="observaciones" id="observaciones" class="form-control" rows="3" maxlength="250">{{ old('observaciones') }}</textarea>
+                <textarea name="observaciones" id="observaciones" class="form-control" rows="3" maxlength="250"><?php echo e(old('observaciones')); ?></textarea>
                 <div class="text-danger mt-1" id="observaciones-error" style="display:none;">El campo no puede tener espacios al inicio y debe tener un máximo de 250 caracteres.</div>
             </div>
             <div class="col-md-8">
@@ -118,14 +121,14 @@
         <div class="text-end">
             <button type="submit" class="btn btn-danger">Guardar factura</button>
             <button type="button" class="btn btn-danger" id="limpiarFormulario">Limpiar</button>
-            <a href="{{ route('facturas-compra.index') }}" class="btn btn-danger">
+            <a href="<?php echo e(route('facturas-compra.index')); ?>" class="btn btn-danger">
                 Cancelar
             </a>
         </div>
     </form>
     </div>
 
-    {{-- Modal para agregar productos --}}
+    
     <div class="modal fade" id="modalProductos" tabindex="-1" aria-labelledby="modalProductosLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content bg-dark text-white">
@@ -153,36 +156,36 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($productos as $producto)
+                            <?php $__currentLoopData = $productos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <tr>
-                                    <td>{{ $producto->nombre }}</td>
+                                    <td><?php echo e($producto->nombre); ?></td>
                                     <td>
-                                        <input type="number" id="cantidad_{{ $producto->id }}" class="form-control" value="1" min="1" required style="width: 80px;">
-                                        <div class="text-danger mt-1" id="cantidad_{{ $producto->id }}-error" style="display:none;"></div>
+                                        <input type="number" id="cantidad_<?php echo e($producto->id); ?>" class="form-control" value="1" min="1" required style="width: 80px;">
+                                        <div class="text-danger mt-1" id="cantidad_<?php echo e($producto->id); ?>-error" style="display:none;"></div>
                                     </td>
                                     <td>
-                                        <input type="number" id="precio_compra_{{ $producto->id }}" class="form-control" value="{{ $producto->precio_compra }}" min="0" step="0.01" required style="width: 100px;">
-                                        <div class="text-danger mt-1" id="precio_compra_{{ $producto->id }}-error" style="display:none;"></div>
+                                        <input type="number" id="precio_compra_<?php echo e($producto->id); ?>" class="form-control" value="<?php echo e($producto->precio_compra); ?>" min="0" step="0.01" required style="width: 100px;">
+                                        <div class="text-danger mt-1" id="precio_compra_<?php echo e($producto->id); ?>-error" style="display:none;"></div>
                                     </td>
                                     <td>
-                                        <input type="number" id="precio_venta_{{ $producto->id }}" class="form-control" value="{{ $producto->precio_venta }}" min="0" step="0.01" required style="width: 100px;">
-                                        <div class="text-danger mt-1" id="precio_venta_{{ $producto->id }}-error" style="display:none;"></div>
+                                        <input type="number" id="precio_venta_<?php echo e($producto->id); ?>" class="form-control" value="<?php echo e($producto->precio_venta); ?>" min="0" step="0.01" required style="width: 100px;">
+                                        <div class="text-danger mt-1" id="precio_venta_<?php echo e($producto->id); ?>-error" style="display:none;"></div>
                                     </td>
                                     <td>
-                                        <input type="number" id="descuento_{{ $producto->id }}" class="form-control" value="0" min="0" step="0.01" required style="width: 80px;">
-                                        <div class="text-danger mt-1" id="descuento_{{ $producto->id }}-error" style="display:none;"></div>
+                                        <input type="number" id="descuento_<?php echo e($producto->id); ?>" class="form-control" value="0" min="0" step="0.01" required style="width: 80px;">
+                                        <div class="text-danger mt-1" id="descuento_<?php echo e($producto->id); ?>-error" style="display:none;"></div>
                                     </td>
                                     <td>
-                                        <input type="number" id="impuesto_{{ $producto->id }}" class="form-control" value="0" min="0" step="0.01" required style="width: 80px;">
-                                        <div class="text-danger mt-1" id="impuesto_{{ $producto->id }}-error" style="display:none;"></div>
+                                        <input type="number" id="impuesto_<?php echo e($producto->id); ?>" class="form-control" value="0" min="0" step="0.01" required style="width: 80px;">
+                                        <div class="text-danger mt-1" id="impuesto_<?php echo e($producto->id); ?>-error" style="display:none;"></div>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-success btn-sm" onclick="agregarProductoDesdeModal({{ $producto->id }})">
+                                        <button type="button" class="btn btn-success btn-sm" onclick="agregarProductoDesdeModal(<?php echo e($producto->id); ?>)">
                                             Agregar
                                         </button>
                                     </td>
                                 </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                         </table>
                     </div>
@@ -196,11 +199,11 @@
 
 
     <script>
-        const productosDisponibles = @json($productos);
+        const productosDisponibles = <?php echo json_encode($productos, 15, 512) ?>;
         let productosSeleccionados = [];
 
         document.addEventListener('DOMContentLoaded', function () {
-            const oldDetalles = @json(old('detalles'));
+            const oldDetalles = <?php echo json_encode(old('detalles'), 15, 512) ?>;
             if (oldDetalles && oldDetalles.length > 0) {
                 oldDetalles.forEach(oldDetalle => {
                     const productoOriginal = productosDisponibles.find(p => p.id == oldDetalle.producto_id);
@@ -539,4 +542,6 @@
         });
 
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\FullRepuestos\resources\views/facturaCompra/create.blade.php ENDPATH**/ ?>

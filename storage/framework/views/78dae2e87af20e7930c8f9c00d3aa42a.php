@@ -1,64 +1,100 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
     <div class="container table-container">
         <h1 class="text-white mb-4">Registrar Factura de Venta</h1>
 
-        {{-- Mensajes de sesión --}}
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+        
+        <?php if(session('error')): ?>
+            <div class="alert alert-danger"><?php echo e(session('error')); ?></div>
+        <?php endif; ?>
+        <?php if(session('success')): ?>
+            <div class="alert alert-success"><?php echo e(session('success')); ?></div>
+        <?php endif; ?>
 
-        {{-- Contenedor para mensajes de validación de JS del formulario principal --}}
+        
         <div id="js-alert-message" style="display: none;" class="mb-3"></div>
 
-        <form action="{{ route('facturas.store') }}" method="POST" id="facturaForm" class="needs-validation" novalidate>
-            @csrf
+        <form action="<?php echo e(route('facturas.store')); ?>" method="POST" id="facturaForm" class="needs-validation" novalidate>
+            <?php echo csrf_field(); ?>
 
-            {{-- Cliente --}}
+            
             <div class="mb-3">
                 <label for="cliente_id" class="form-label text-white">Cliente</label>
                 <select name="cliente_id" id="cliente_id"
-                        class="form-select @error('cliente_id') is-invalid @enderror" required>
+                        class="form-select <?php $__errorArgs = ['cliente_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                     <option value=""> Seleccione un cliente </option>
-                    @foreach ($clientes as $cliente)
-                        <option value="{{ $cliente->id }}" {{ old('cliente_id') == $cliente->id ? 'selected' : '' }}>
-                            {{ $cliente->nombre }}
+                    <?php $__currentLoopData = $clientes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cliente): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($cliente->id); ?>" <?php echo e(old('cliente_id') == $cliente->id ? 'selected' : ''); ?>>
+                            <?php echo e($cliente->nombre); ?>
+
                         </option>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
-                @error('cliente_id')
-                <div class="text-danger">{{ $message }}</div>
-                @else
+                <?php $__errorArgs = ['cliente_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <div class="text-danger"><?php echo e($message); ?></div>
+                <?php else: ?>
                     <div class="invalid-feedback">Debe seleccionar un cliente.</div>
-                    @enderror
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
-            {{-- Fecha --}}
+            
             <div class="mb-3">
                 <label for="fecha" class="form-label text-white">Fecha</label>
                 <input type="date" id="fecha" name="fecha"
-                       class="form-control @error('fecha') is-invalid @enderror"
-                       value="{{ old('fecha', date('Y-m-d')) }}" required>
-                @error('fecha')
-                <div class="text-danger">{{ $message }}</div>
-                @else
+                       class="form-control <?php $__errorArgs = ['fecha'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                       value="<?php echo e(old('fecha', date('Y-m-d'))); ?>" required>
+                <?php $__errorArgs = ['fecha'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <div class="text-danger"><?php echo e($message); ?></div>
+                <?php else: ?>
                     <div class="invalid-feedback">Debe ingresar una fecha válida.</div>
-                    @enderror
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
-            {{-- Botón para abrir modal de productos --}}
+            
             <button type="button" class="btn btn-danger mb-3" data-bs-toggle="modal" data-bs-target="#modalProductos">
                 Seleccionar productos
             </button>
-            @error('detalles')
-            <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
+            <?php $__errorArgs = ['detalles'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+            <div class="alert alert-danger"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
 
-            {{-- Tabla productos seleccionados --}}
+            
             <div class="table-responsive mb-4">
                 <table class="table table-dark table-hover align-middle" id="productosSeleccionados">
                     <thead>
@@ -76,12 +112,12 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {{-- Aquí se agregan dinámicamente los productos --}}
+                    
                     </tbody>
                 </table>
             </div>
 
-            {{-- Totales --}}
+            
             <div class="text-end text-white mb-4">
                 <p>Subtotal: L. <span id="subtotal">0.00</span></p>
                 <p>IVA: L. <span id="totalIva">0.00</span></p>
@@ -93,12 +129,12 @@
                 <button type="submit" class="btn btn-danger">Guardar factura</button>
                 <button type="button" class="btn btn-danger" id="limpiarFormulario">Limpiar</button>
 
-                <a href="{{ route('facturas.index') }}" class="btn btn-danger">Cancelar</a>
+                <a href="<?php echo e(route('facturas.index')); ?>" class="btn btn-danger">Cancelar</a>
             </div>
         </form>
     </div>
 
-    {{-- Modal Productos --}}
+    
     <div class="modal fade" id="modalProductos" tabindex="-1" aria-labelledby="modalProductosLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content bg-dark text-white">
@@ -125,38 +161,45 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($productos as $producto)
+                            <?php $__currentLoopData = $productos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <tr>
-                                    <td>{{ $producto->nombre }}</td>
-                                    <td>{{ $producto->marca }}</td>
-                                    <td>{{ $producto->modelo }}</td>
-                                    <td>{{ $producto->anio }}</td>
-                                    <td>{{ $producto->stock }}</td>
+                                    <td><?php echo e($producto->nombre); ?></td>
+                                    <td><?php echo e($producto->marca); ?></td>
+                                    <td><?php echo e($producto->modelo); ?></td>
+                                    <td><?php echo e($producto->anio); ?></td>
+                                    <td><?php echo e($producto->stock); ?></td>
                                     <td>
-                                        <input type="number" min="1" max="{{ $producto->stock }}" value="1"
-                                               class="form-control cantidad-input @error('detalles') is-invalid @enderror"
+                                        <input type="number" min="1" max="<?php echo e($producto->stock); ?>" value="1"
+                                               class="form-control cantidad-input <?php $__errorArgs = ['detalles'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                                style="width: 80px;" required>
                                         <div class="invalid-feedback">Ingrese una cantidad válida.</div>
                                     </td>
-                                    <td>{{ number_format($producto->precio_venta, 2) }}</td>
-                                    <td>{{ $producto->impuesto }}</td>
+                                    <td><?php echo e(number_format($producto->precio_venta, 2)); ?></td>
+                                    <td><?php echo e($producto->impuesto); ?></td>
                                     <td>
                                         <button type="button"
                                                 class="btn btn-success btn-sm btn-agregar-producto"
-                                                data-id="{{ $producto->id }}"
-                                                data-nombre="{{ $producto->nombre }}"
-                                                data-marca="{{ $producto->marca }}"
-                                                data-modelo="{{ $producto->modelo }}"
-                                                data-anio="{{ $producto->anio }}"
-                                                data-stock="{{ $producto->stock }}"
-                                                data-precio="{{ $producto->precio_venta }}"
-                                                data-iva="{{ $producto->impuesto }}">
+                                                data-id="<?php echo e($producto->id); ?>"
+                                                data-nombre="<?php echo e($producto->nombre); ?>"
+                                                data-marca="<?php echo e($producto->marca); ?>"
+                                                data-modelo="<?php echo e($producto->modelo); ?>"
+                                                data-anio="<?php echo e($producto->anio); ?>"
+                                                data-stock="<?php echo e($producto->stock); ?>"
+                                                data-precio="<?php echo e($producto->precio_venta); ?>"
+                                                data-iva="<?php echo e($producto->impuesto); ?>">
                                             Agregar
                                         </button>
                                         <div class="duplicate-product-message text-danger mt-1" style="display:none;"></div>
                                     </td>
                                 </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                         </table>
                     </div>
@@ -168,7 +211,7 @@
         </div>
     </div>
 
-    {{-- Scripts --}}
+    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('facturaForm');
@@ -400,4 +443,6 @@
             }
         });
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\FullRepuestos\resources\views/facturas/create.blade.php ENDPATH**/ ?>

@@ -1,12 +1,12 @@
-@extends('layouts.app')
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <title>Registrar Proveedor</title>
+    <title>Editar Proveedor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    {{-- Select2 CSS --}}
+    
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 </head>
@@ -15,197 +15,375 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="form-container">
-                <h2 class="mb-4">Registrar nuevo proveedor</h2>
+                <h2 class="mb-4">Editar Proveedor</h2>
 
-                {{-- Mensajes de éxito y error de sesión --}}
-                @if(session('success'))
+                
+                <?php if(session('success')): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
+                        <?php echo e(session('success')); ?>
+
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if(session('error'))
+                <?php if(session('error')): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
+                        <?php echo e(session('error')); ?>
+
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                <form id="formProveedor" action="{{ route('proveedores.store') }}" method="POST" novalidate>
-                    @csrf
+                <form id="formProveedor" action="<?php echo e(route('proveedores.update', $proveedor->id)); ?>" method="POST" novalidate>
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('PUT'); ?> 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="nombre_empresa" class="form-label">Nombre de la empresa *</label>
-                            <input type="text" class="form-control @error('nombre_empresa') is-invalid @enderror"
-                                   id="nombre_empresa" name="nombre_empresa" value="{{ old('nombre_empresa') }}" required maxlength="30">
+                            <input type="text" class="form-control <?php $__errorArgs = ['nombre_empresa'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                   id="nombre_empresa" name="nombre_empresa" value="<?php echo e(old('nombre_empresa', $proveedor->nombre_empresa)); ?>" required maxlength="30">
                             <div class="invalid-feedback" id="nombre_empresa-feedback">
-                                @error('nombre_empresa')
-                                    {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['nombre_empresa'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     Este campo es obligatorio.
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="pais_origen" class="form-label">País de origen *</label>
-                            <select class="form-select @error('pais_origen') is-invalid @enderror"
+                            <select class="form-select <?php $__errorArgs = ['pais_origen'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                     id="pais_origen" name="pais_origen" required>
                                 <option value="">Seleccione un país...</option>
-                                {{-- Los países se generarán dinámicamente en el script JS --}}
-                                @foreach($countries ?? [] as $code => $country)
-                                    <option value="{{ $country['name'] }}" data-phone-code="{{ $country['phone_code'] }}" {{ old('pais_origen') == $country['name'] ? 'selected' : '' }}>
-                                        {{ $country['name'] }}
+                                
+                                <?php $__currentLoopData = $countries ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $country): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($country['name']); ?>" data-phone-code="<?php echo e($country['phone_code']); ?>"
+                                        <?php echo e((old('pais_origen', $proveedor->pais_origen) == $country['name']) ? 'selected' : ''); ?>>
+                                        <?php echo e($country['name']); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                             <div class="invalid-feedback" id="pais_origen-feedback">
-                                @error('pais_origen')
-                                    {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['pais_origen'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     Por favor, seleccione el país de origen.
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="persona_contacto" class="form-label">Persona de contacto *</label>
-                            <input type="text" class="form-control @error('persona_contacto') is-invalid @enderror"
-                                   id="persona_contacto" name="persona_contacto" value="{{ old('persona_contacto') }}"
+                            <input type="text" class="form-control <?php $__errorArgs = ['persona_contacto'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                   id="persona_contacto" name="persona_contacto"
+                                   value="<?php echo e(old('persona_contacto', $proveedor->persona_contacto)); ?>"
                                    title="Solo se permiten letras y espacios" required maxlength="32">
                             <div class="invalid-feedback" id="persona_contacto-feedback">
-                                @error('persona_contacto')
-                                    {{ $message }}
-                                @else
-                                    Este campo es obligatorio.
-                                @enderror
+                                <?php $__errorArgs = ['persona_contacto'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <?php echo e($message); ?>
+
+                                <?php else: ?>
+                                    Este campo es obligatorio y solo puede contener letras.
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="correo_electronico" class="form-label">Correo electrónico *</label>
-                            <input type="email" class="form-control @error('correo_electronico') is-invalid @enderror"
-                                   id="correo_electronico" name="correo_electronico" value="{{ old('correo_electronico') }}" required maxlength="30">
+                            <input type="email" class="form-control <?php $__errorArgs = ['correo_electronico'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                   id="correo_electronico" name="correo_electronico" value="<?php echo e(old('correo_electronico', $proveedor->correo_electronico)); ?>" required maxlength="30">
                             <div class="invalid-feedback" id="correo_electronico-feedback">
-                                @error('correo_electronico')
-                                    {{ $message }}
-                                @else
-                                    Este campo es obligatorio y debe ser un correo válido .
-                                @enderror
+                                <?php $__errorArgs = ['correo_electronico'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <?php echo e($message); ?>
+
+                                <?php else: ?>
+                                    Este campo es obligatorio y debe ser un correo válido.
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="telefono_contacto" class="form-label">Teléfono de contacto *</label>
-                            <input type="text" class="form-control @error('telefono_contacto') is-invalid @enderror"
-                                   id="telefono_contacto" name="telefono_contacto" value="{{ old('telefono_contacto') }}"
+                            <input type="text" class="form-control <?php $__errorArgs = ['telefono_contacto'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                   id="telefono_contacto" name="telefono_contacto" value="<?php echo e(old('telefono_contacto', $proveedor->telefono_contacto)); ?>"
                                    maxlength="12" required placeholder="Ej: +504XXXXXXXX">
                             <div class="invalid-feedback" id="telefono_contacto-feedback">
-                                @error('telefono_contacto')
-                                    {{ $message }}
-                                @else
-                                    Este campo es obligatorio .
-                                @enderror
+                                <?php $__errorArgs = ['telefono_contacto'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <?php echo e($message); ?>
+
+                                <?php else: ?>
+                                    Este campo es obligatorio y debe incluir el código de país (ej. +504) y tener entre 8 y 12 caracteres (incluyendo el +).
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="direccion" class="form-label">Dirección *</label>
-                            <textarea class="form-control @error('direccion') is-invalid @enderror"
-                                      id="direccion" name="direccion" required maxlength="150" rows="3">{{ old('direccion') }}</textarea>
+                            <textarea class="form-control <?php $__errorArgs = ['direccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                      id="direccion" name="direccion" required maxlength="150" rows="3"><?php echo e(old('direccion', $proveedor->direccion)); ?></textarea>
                             <div class="invalid-feedback" id="direccion-feedback">
-                                @error('direccion')
-                                    {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['direccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     Este campo es obligatorio.
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label for="marcas" class="form-label">Marcas que maneja *</label>
-                            <select name="marcas[]" id="marcas" multiple required
-                                    class="form-select bg-dark text-black @error('marcas') is-invalid @enderror"
-                                    style="background-color: #343a40 !important; color: #fff !important;">
-                                <option value="" disabled>Seleccione marcas...</option>
-                                <option value="Toyota" {{ in_array('Toyota', old('marcas', [])) ? 'selected' : '' }}>Toyota</option>
-                                <option value="Honda" {{ in_array('Honda', old('marcas', [])) ? 'selected' : '' }}>Honda</option>
-                                <option value="Nissan" {{ in_array('Nissan', old('marcas', [])) ? 'selected' : '' }}>Nissan</option>
-                                <option value="Mazda" {{ in_array('Mazda', old('marcas', [])) ? 'selected' : '' }}>Mazda</option>
-                                <option value="Mitsubishi" {{ in_array('Mitsubishi', old('marcas', [])) ? 'selected' : '' }}>Mitsubishi</option>
-                                <option value="Suzuki" {{ in_array('Suzuki', old('marcas', [])) ? 'selected' : '' }}>Suzuki</option>
-                                <option value="Hyundai" {{ in_array('Hyundai', old('marcas', [])) ? 'selected' : '' }}>Hyundai</option>
-                                <option value="Kia" {{ in_array('Kia', old('marcas', [])) ? 'selected' : '' }}>Kia</option>
-                                <option value="Ford" {{ in_array('Ford', old('marcas', [])) ? 'selected' : '' }}>Ford</option>
-                                <option value="Chevrolet" {{ in_array('Chevrolet', old('marcas', [])) ? 'selected' : '' }}>Chevrolet</option>
+                            <select class="form-select <?php $__errorArgs = ['marcas'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                    id="marcas" name="marcas[]" multiple required>
+                                <option value="">Seleccione marcas...</option>
+                                <?php
+                                    $allMarcas = [
+                                        'Toyota', 'Honda', 'Nissan', 'Mazda', 'Mitsubishi',
+                                        'Suzuki', 'Hyundai', 'Kia', 'Ford', 'Chevrolet'
+                                    ];
+                                    // Asegurarse de que $proveedor->marcas sea un array, incluso si es null o string JSON
+                                    $selectedMarcas = old('marcas', $proveedor->marcas ?? []);
+                                    if (is_string($selectedMarcas)) {
+                                        $selectedMarcas = json_decode($selectedMarcas, true) ?? [];
+                                    }
+                                    if (!is_array($selectedMarcas)) { // Doble check
+                                        $selectedMarcas = [];
+                                    }
+                                ?>
+                                <?php $__currentLoopData = $allMarcas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $marca): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($marca); ?>"
+                                        <?php echo e(in_array($marca, $selectedMarcas) ? 'selected' : ''); ?>>
+                                        <?php echo e($marca); ?>
+
+                                    </option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                             <div class="invalid-feedback" id="marcas-feedback">
-                                @error('marcas')
-                                {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['marcas'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     Por favor, seleccione al menos una marca.
-                                    @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
-
-
 
                         <div class="col-md-6 mb-3">
                             <label for="tipo_autopartes" class="form-label">Tipo de Autopartes *</label>
-                            <select class="form-select @error('tipo_autopartes') is-invalid @enderror"
+                            <select class="form-select <?php $__errorArgs = ['tipo_autopartes'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                     id="tipo_autopartes" name="tipo_autopartes[]" multiple required>
                                 <option value="">Seleccione tipos de autopartes...</option>
-                                <option value="Motor" {{ in_array('Motor', old('tipo_autopartes', [])) ? 'selected' : '' }}>Motor</option>
-                                <option value="Transmisión" {{ in_array('Transmisión', old('tipo_autopartes', [])) ? 'selected' : '' }}>Transmisión</option>
-                                <option value="Suspensión" {{ in_array('Suspensión', old('tipo_autopartes', [])) ? 'selected' : '' }}>Suspensión</option>
-                                <option value="Frenos" {{ in_array('Frenos', old('tipo_autopartes', [])) ? 'selected' : '' }}>Frenos</option>
-                                <option value="Eléctrico" {{ in_array('Eléctrico', old('tipo_autopartes', [])) ? 'selected' : '' }}>Eléctrico</option>
-                                <option value="Carrocería" {{ in_array('Carrocería', old('carroceria', [])) ? 'selected' : '' }}>Carrocería</option>
-                                <option value="Interior" {{ in_array('Interior', old('interior', [])) ? 'selected' : '' }}>Interior</option>
-                                <option value="Accesorios" {{ in_array('Accesorios', old('accesorios', [])) ? 'selected' : '' }}>Accesorios</option>
+                                <?php
+                                    $allTiposAutopartes = [
+                                        'Motor', 'Transmisión', 'Suspensión', 'Frenos',
+                                        'Eléctrico', 'Carrocería', 'Interior', 'Accesorios'
+                                    ];
+                                    // Asegurarse de que $proveedor->tipo_autopartes sea un array, incluso si es null o string JSON
+                                    $selectedTiposAutopartes = old('tipo_autopartes', $proveedor->tipo_autopartes ?? []);
+                                    if (is_string($selectedTiposAutopartes)) {
+                                        $selectedTiposAutopartes = json_decode($selectedTiposAutopartes, true) ?? [];
+                                    }
+                                    if (!is_array($selectedTiposAutopartes)) { // Doble check
+                                        $selectedTiposAutopartes = [];
+                                    }
+                                ?>
+                                <?php $__currentLoopData = $allTiposAutopartes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($tipo); ?>"
+                                        <?php echo e(in_array($tipo, $selectedTiposAutopartes) ? 'selected' : ''); ?>>
+                                        <?php echo e($tipo); ?>
+
+                                    </option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                             <div class="invalid-feedback" id="tipo_autopartes-feedback">
-                                @error('tipo_autopartes')
-                                    {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['tipo_autopartes'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     Por favor, seleccione al menos un tipo de autoparte.
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="persona_contacto_secundaria" class="form-label">Persona de Contacto Secundaria</label>
-                            <input type="text" class="form-control @error('persona_contacto_secundaria') is-invalid @enderror"
+                            <input type="text" class="form-control <?php $__errorArgs = ['persona_contacto_secundaria'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                    id="persona_contacto_secundaria" name="persona_contacto_secundaria"
-                                   value="{{ old('persona_contacto_secundaria') }}" maxlength="32">
+                                   value="<?php echo e(old('persona_contacto_secundaria', $proveedor->persona_contacto_secundaria)); ?>" maxlength="32">
                             <div class="invalid-feedback" id="persona_contacto_secundaria-feedback">
-                                @error('persona_contacto_secundaria')
-                                    {{ $message }}
-                                @else
+                                <?php $__errorArgs = ['persona_contacto_secundaria'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <?php echo e($message); ?>
+
+                                <?php else: ?>
                                     Solo se permiten letras y espacios, máximo 32 caracteres.
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="telefono_contacto_secundario" class="form-label">Teléfono de Contacto Secundario</label>
-                            <input type="text" class="form-control @error('telefono_contacto_secundario') is-invalid @enderror"
+                            <input type="text" class="form-control <?php $__errorArgs = ['telefono_contacto_secundario'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                    id="telefono_contacto_secundario" name="telefono_contacto_secundario"
-                                   value="{{ old('telefono_contacto_secundario') }}" maxlength="12" placeholder="Ej: +504XXXXXXXX">
+                                   value="<?php echo e(old('telefono_contacto_secundario', $proveedor->telefono_contacto_secundario)); ?>" maxlength="12" placeholder="Ej: +504XXXXXXXX">
                             <div class="invalid-feedback" id="telefono_contacto_secundario-feedback">
-                                @error('telefono_contacto_secundario')
-                                    {{ $message }}
-                                @else
-                                    Este campo es obligatorio.
-                                @enderror
+                                <?php $__errorArgs = ['telefono_contacto_secundario'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <?php echo e($message); ?>
+
+                                <?php else: ?>
+                                    El teléfono debe incluir el código de país (ej. +504) y tener entre 8 y 12 caracteres (incluyendo el +).
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-start gap-2 mt-4">
-                        <button type="submit" class="btn btn-danger">Registrar Proveedor</button>
-                        <button type="button" class="btn btn-danger" id="limpiarFormulario">Limpiar</button>
-                        <a href="{{ route('proveedores.index') }}" class="btn btn-danger">Cancelar</a>
+                        <button type="submit" class="btn btn-danger">Actualizar Proveedor</button>
+                        <button type="reset" class="btn btn-danger">Restablecer</button>
+                        <a href="<?php echo e(route('proveedores.index')); ?>" class="btn btn-danger">Cancelar</a>
                     </div>
                 </form>
             </div>
@@ -213,11 +391,11 @@
     </div>
 </div>
 
-{{-- CDN de Bootstrap JS (para funcionalidades interactivas de Bootstrap) --}}
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-{{-- jQuery (necesario para Select2) --}}
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-{{-- Select2 JS --}}
+
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
@@ -238,6 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- PAÍSES (Asegúrate de que 'countries' esté definido, ya sea inyectado por Laravel o JS) ---
     // Si 'countries' no viene de Laravel, defínelo aquí completamente:
     const countries = [
+        { "name": "Afganistán", "phone_code": "+93" },
         { "name": "Albania", "phone_code": "+355" },
         { "name": "Algeria", "phone_code": "+213" },
         { "name": "Andorra", "phone_code": "+376" },
@@ -431,30 +610,33 @@ document.addEventListener('DOMContentLoaded', function() {
         { "name": "Yemen", "phone_code": "+967" },
         { "name": "Zambia", "phone_code": "+260" },
         { "name": "Zimbabwe", "phone_code": "+263" }
-
+        // etc.
     ];
 
-    // Función para poblar el select de países (si no está ya poblado por Blade)
+    // Función para poblar el select de países
     function populateCountries() {
-        // Solo poblar si no hay opciones cargadas por Blade (excepto la placeholder)
-        if (paisOrigenSelect.options.length <= 1 || paisOrigenSelect.querySelector('option[value=""]')) {
-            const currentSelectedValue = paisOrigenSelect.value; // Guardar valor seleccionado
-            paisOrigenSelect.innerHTML = ''; // Limpiar opciones existentes
-            const placeholderOption = document.createElement('option');
-            placeholderOption.value = '';
-            placeholderOption.textContent = 'Seleccione un país...';
-            paisOrigenSelect.appendChild(placeholderOption);
+        const currentCountry = paisOrigenSelect.getAttribute('data-initial-value') || "<?php echo e(old('pais_origen', $proveedor->pais_origen)); ?>";
 
-            countries.forEach(country => {
+        // Asegurarse de que el select esté vacío antes de poblar si ya fue cargado por Blade.
+        // Si el Blade ya las carga, esta función puede no ser estrictamente necesaria,
+        // pero asegura que los datos JS estén disponibles si la lista es grande.
+        // Aquí no limpiamos el innerHTML si ya hay opciones de Blade para no duplicar.
+        if (paisOrigenSelect.options.length <= 1) { // Solo si no hay opciones cargadas (o solo la placeholder)
+             countries.forEach(country => {
                 const option = document.createElement('option');
                 option.value = country.name;
                 option.textContent = country.name;
                 option.setAttribute('data-phone-code', country.phone_code);
-                if (currentSelectedValue === country.name) {
-                    option.selected = true; // Restaurar selección
-                }
                 paisOrigenSelect.appendChild(option);
             });
+        }
+        // Seleccionar la opción correcta después de poblar/confirmar existencia
+        const options = paisOrigenSelect.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value === currentCountry) {
+                options[i].selected = true;
+                break;
+            }
         }
     }
     populateCountries(); // Llama para asegurar que los países estén ahí.
@@ -480,7 +662,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 inputElement.value = code;
             }
             // Asegurarse de que el cursor esté al final del código
-            // Solo si el campo no está vacío después de la actualización (para no poner el cursor en un campo vacío)
             if (inputElement.value) {
                 inputElement.setSelectionRange(inputElement.value.length, inputElement.value.length);
             }
@@ -493,12 +674,13 @@ document.addEventListener('DOMContentLoaded', function() {
         telefonoContactoSecundarioInput.dispatchEvent(new Event('input'));
     });
 
-    // Disparar el cambio de país al cargar si ya hay un valor seleccionado (útil con old())
+    // Disparar el cambio de país al cargar para inicializar el prefijo de teléfono
     if (paisOrigenSelect.value) {
         paisOrigenSelect.dispatchEvent(new Event('change'));
     }
 
-    // --- PREVENCIÓN DE ENTRADA EN TIEMPO REAL (Más estricta) ---
+
+    // --- PREVENCIÓN DE ENTRADA EN TIEMPO REAL ---
 
     // Nombre de Empresa: Limitar a 30 caracteres.
     nombreEmpresaInput.addEventListener('input', function() {
@@ -509,44 +691,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Persona de Contacto: Solo letras, espacios, y tildes/ñ, hasta 32 caracteres.
     const regexSoloLetrasEspacios = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
-    personaContactoInput.addEventListener('input', function() {
-        let value = this.value;
-        const originalSelectionStart = this.selectionStart;
-        const originalSelectionEnd = this.selectionEnd;
+    function restrictToLettersAndSpaces(inputElement, maxLength) {
+        inputElement.addEventListener('input', function() {
+            let value = this.value;
+            const originalSelectionStart = this.selectionStart;
+            const originalSelectionEnd = this.selectionEnd;
 
-        // Filtra caracteres no permitidos
-        let filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            let filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            if (filteredValue.length > maxLength) {
+                filteredValue = filteredValue.substring(0, maxLength);
+            }
 
-        // Limita la longitud
-        if (filteredValue.length > 32) {
-            filteredValue = filteredValue.substring(0, 32);
-        }
+            if (this.value !== filteredValue) {
+                this.value = filteredValue;
+                this.setSelectionRange(originalSelectionStart - (value.length - filteredValue.length), originalSelectionEnd - (value.length - filteredValue.length));
+            }
+        });
+    }
+    restrictToLettersAndSpaces(personaContactoInput, 32);
+    restrictToLettersAndSpaces(personaContactoSecundariaInput, 32);
 
-        if (this.value !== filteredValue) {
-            this.value = filteredValue;
-            // Ajusta la posición del cursor si los caracteres fueron eliminados
-            this.setSelectionRange(originalSelectionStart - (value.length - filteredValue.length), originalSelectionEnd - (value.length - filteredValue.length));
-        }
-    });
-    personaContactoSecundariaInput.addEventListener('input', function() {
-        let value = this.value;
-        const originalSelectionStart = this.selectionStart;
-        const originalSelectionEnd = this.selectionEnd;
-
-        // Filtra caracteres no permitidos
-        let filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-
-        // Limita la longitud
-        if (filteredValue.length > 32) {
-            filteredValue = filteredValue.substring(0, 32);
-        }
-
-        if (this.value !== filteredValue) {
-            this.value = filteredValue;
-            // Ajusta la posición del cursor si los caracteres fueron eliminados
-            this.setSelectionRange(originalSelectionStart - (value.length - filteredValue.length), originalSelectionEnd - (value.length - filteredValue.length));
-        }
-    });
 
     // Teléfono: Solo números y un '+' inicial. Máx 12 caracteres.
     const restrictPhoneInput = (inputElement) => {
@@ -588,22 +752,21 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-    // --- VALIDACIÓN EN EL ENVÍO DEL FORMULARIO (Se activa si JS permite el envío inicial) ---
+    // --- VALIDACIÓN EN EL ENVÍO DEL FORMULARIO ---
 
     form.addEventListener('submit', function(event) {
         let formIsValid = true;
 
-        // Limpiar mensajes de error previos (excepto los de Laravel que están marcados)
+        // Limpiar mensajes de error previos
         document.querySelectorAll('.is-invalid').forEach(element => {
             element.classList.remove('is-invalid');
         });
         document.querySelectorAll('.invalid-feedback').forEach(element => {
             if (!element.dataset.laravelError) { // No ocultar si es un error de Laravel
                 element.style.display = 'none';
-                element.textContent = ''; // Limpiar el texto si no es de Laravel
+                element.textContent = ''; // Limpiar el texto también
             }
         });
-        // Limpiar la clase de Select2 también
         $('.is-invalid-select2').removeClass('is-invalid-select2');
 
 
@@ -688,7 +851,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validar Marcas que maneja (Select2)
         const selectedMarcas = $(marcasSelect).val();
         if (!selectedMarcas || selectedMarcas.length === 0) {
-            $(marcasSelect).next('.select2-container').find('.select2-selection').addClass('is-invalid-select2'); // Clase para Select2
+            $(marcasSelect).next('.select2-container').find('.select2-selection').addClass('is-invalid-select2');
             document.getElementById('marcas-feedback').textContent = 'Por favor, seleccione al menos una marca.';
             document.getElementById('marcas-feedback').style.display = 'block';
             formIsValid = false;
@@ -697,7 +860,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validar Tipo de Autopartes (Select2)
         const selectedTipoAutopartes = $(tipoAutopartesSelect).val();
         if (!selectedTipoAutopartes || selectedTipoAutopartes.length === 0) {
-            $(tipoAutopartesSelect).next('.select2-container').find('.select2-selection').addClass('is-invalid-select2'); // Clase para Select2
+            $(tipoAutopartesSelect).next('.select2-container').find('.select2-selection').addClass('is-invalid-select2');
             document.getElementById('tipo_autopartes-feedback').textContent = 'Por favor, seleccione al menos un tipo de autoparte.';
             document.getElementById('tipo_autopartes-feedback').style.display = 'block';
             formIsValid = false;
@@ -727,47 +890,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // --- FUNCIONALIDAD DEL BOTÓN LIMPIAR ---
-    document.getElementById('limpiarFormulario').addEventListener('click', function() {
-        form.reset(); // Resetea el formulario a sus valores iniciales (old() si la página recargó)
-
-        // Luego, asegúrate de que todos los campos relevantes estén vacíos y sin errores
-        nombreEmpresaInput.value = '';
-        personaContactoInput.value = '';
-        correoInput.value = '';
-        direccionTextarea.value = '';
-        personaContactoSecundariaInput.value = '';
-
-        // Limpiar clases de validación y ocultar mensajes de feedback
-        document.querySelectorAll('.is-invalid').forEach(element => {
-            element.classList.remove('is-invalid');
-        });
-        document.querySelectorAll('.invalid-feedback').forEach(element => {
-            element.style.display = 'none';
-            element.removeAttribute('data-laravel-error'); // Quitar marcador de error de Laravel
-            // Restaurar mensajes por defecto (opcional, pero buena práctica si el contenido cambia)
-            if (element.id === 'nombre_empresa-feedback') element.textContent = 'Este campo es obligatorio.';
-            if (element.id === 'pais_origen-feedback') element.textContent = 'Por favor, seleccione el país de origen.';
-            if (element.id === 'persona_contacto-feedback') element.textContent = 'Este campo es obligatorio y solo puede contener letras.';
-            if (element.id === 'correo_electronico-feedback') element.textContent = 'Este campo es obligatorio y debe ser un correo válido.';
-            if (element.id === 'telefono_contacto-feedback') element.textContent = 'Este campo es obligatorio y debe incluir el código de país (ej. +504) y tener entre 8 y 12 caracteres (incluyendo el +).';
-            if (element.id === 'direccion-feedback') element.textContent = 'Este campo es obligatorio.';
-            if (element.id === 'marcas-feedback') element.textContent = 'Por favor, seleccione al menos una marca.';
-            if (element.id === 'tipo_autopartes-feedback') element.textContent = 'Por favor, seleccione al menos un tipo de autoparte.';
-            if (element.id === 'persona_contacto_secundaria-feedback') element.textContent = 'Solo se permiten letras y espacios, máximo 32 caracteres.';
-            if (element.id === 'telefono_contacto_secundario-feedback') element.textContent = 'El teléfono debe incluir el código de país (ej. +504) y tener entre 8 y 12 caracteres (incluyendo el +).';
-        });
-
-        // Limpiar Select2 manualmente y quitar clase de validación visual
-        $('#marcas, #tipo_autopartes').val(null).trigger('change');
-        $('.is-invalid-select2').removeClass('is-invalid-select2');
-
-        // Restablecer el select de país a la opción por defecto y luego disparar su evento change
-        // Esto limpiará automáticamente los campos de teléfono o los dejará con el código del país si la opción es la placeholder
-        paisOrigenSelect.value = ''; // Selecciona la opción vacía
-        paisOrigenSelect.dispatchEvent(new Event('change')); // Dispara el evento para actualizar los teléfonos
-    });
-
     // --- MANEJO DE ERRORES DE LARAVEL AL CARGAR LA PÁGINA ---
     document.querySelectorAll('.form-control.is-invalid, textarea.is-invalid, .form-select.is-invalid').forEach(function(element) {
         let feedbackElement;
@@ -791,7 +913,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.form-control, textarea').forEach(input => {
         input.addEventListener('input', function() {
             if (this.classList.contains('is-invalid')) {
-                let shouldClear = true;
+                let shouldClear = true; // Por defecto, intentar limpiar
 
                 // Para campos obligatorios, no limpiar la validación si el campo sigue vacío
                 if (this.hasAttribute('required') && this.value.trim().length === 0) {
@@ -816,9 +938,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (feedbackElement) {
                         feedbackElement.style.display = 'none';
                         feedbackElement.removeAttribute('data-laravel-error');
-                        // Restaurar el mensaje por defecto si se limpió el error de Laravel
-                        if (feedbackElement.id === 'nombre_empresa-feedback') feedbackElement.textContent = 'Este campo es obligatorio.';
-                        // ... y así para los demás mensajes por defecto si son relevantes
                     }
                 }
             }
@@ -827,7 +946,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Listener para select/Select2 para limpiar validación
     $('#pais_origen, #marcas, #tipo_autopartes').on('change', function() {
-        if (this.classList.contains('is-invalid')) { // Para select HTML normal
+        // Para select HTML normal
+        if (this.classList.contains('is-invalid')) {
             this.classList.remove('is-invalid');
             const feedbackElement = document.getElementById(this.id + '-feedback');
             if (feedbackElement) {
@@ -850,3 +970,5 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\FullRepuestos\resources\views/proveedores/edit.blade.php ENDPATH**/ ?>
