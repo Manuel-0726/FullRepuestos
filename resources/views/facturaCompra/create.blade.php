@@ -2,19 +2,17 @@
 
 @section('content')
     <div class="container text-white-justify-center">
-
-        <h2 class="mb-3">Registrar factura de compra</h2> <!-- margen inferior pequeño -->
-
-
+        <h2 class="mb-3">Registrar factura de compra</h2>
     </div>
 
-
+    {{-- Mostrar errores de la sesión --}}
     @if (session('error'))
         <div class="alert alert-danger">
             {{ session('error') }}
         </div>
     @endif
 
+    {{-- Mostrar errores de validación de Laravel --}}
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul class="mb-0">
@@ -31,7 +29,7 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="empleado_id" class="form-label">Empleado</label>
-                <select name="empleado_id" id="empleado_id" class="form-select">
+                <select name="empleado_id" id="empleado_id" class="form-select @error('empleado_id') is-invalid @enderror">
                     <option value="">Seleccione un empleado</option>
                     @foreach($empleados as $empleado)
                         <option value="{{ $empleado->id }}" {{ old('empleado_id') == $empleado->id ? 'selected' : '' }}>
@@ -39,11 +37,11 @@
                         </option>
                     @endforeach
                 </select>
-                <div class="text-danger mt-1" id="empleado_id-error" style="display:none;">Seleccione un empleado.</div>
+                <div class="invalid-feedback" id="empleado_id-error">Seleccione un empleado.</div>
             </div>
             <div class="col-md-6">
                 <label for="proveedor_id" class="form-label">Proveedor</label>
-                <select name="proveedor_id" id="proveedor_id" class="form-select">
+                <select name="proveedor_id" id="proveedor_id" class="form-select @error('proveedor_id') is-invalid @enderror">
                     <option value="">Seleccione un proveedor</option>
                     @foreach($proveedores as $proveedor)
                         <option value="{{ $proveedor->id }}" {{ old('proveedor_id') == $proveedor->id ? 'selected' : '' }}>
@@ -51,20 +49,20 @@
                         </option>
                     @endforeach
                 </select>
-                <div class="text-danger mt-1" id="proveedor_id-error" style="display:none;">Seleccione un proveedor.</div>
+                <div class="invalid-feedback" id="proveedor_id-error">Seleccione un proveedor.</div>
             </div>
         </div>
 
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="codigo" class="form-label">Código de Factura</label>
-                <input type="text" name="codigo" id="codigo" class="form-control" value="{{ old('codigo') }}" maxlength="12">
-                <div class="text-danger mt-1" id="codigo-error" style="display:none;">El codigo de la factura es necesario.</div>
+                <input type="text" name="codigo" id="codigo" class="form-control @error('codigo') is-invalid @enderror" value="{{ old('codigo') }}" maxlength="12">
+                <div class="invalid-feedback" id="codigo-error">El código de la factura es necesario y no puede tener espacios iniciales.</div>
             </div>
             <div class="col-md-6">
                 <label for="fecha" class="form-label">Fecha de Compra</label>
-                <input type="date" name="fecha" id="fecha" class="form-control" value="{{ old('fecha', date('Y-m-d')) }}">
-                <div class="text-danger mt-1" id="fecha-error" style="display:none;">Este campo es necesario.</div>
+                <input type="date" name="fecha" id="fecha" class="form-control @error('fecha') is-invalid @enderror" value="{{ old('fecha', date('Y-m-d')) }}">
+                <div class="invalid-feedback" id="fecha-error">Este campo es necesario.</div>
             </div>
         </div>
 
@@ -89,7 +87,13 @@
                     <th>Acciones</th>
                 </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                <tr>
+                    <td colspan="9" id="no-products-message">
+                        No se han agregado productos.
+                    </td>
+                </tr>
+                </tbody>
             </table>
         </div>
 
@@ -100,8 +104,8 @@
         <div class="row mb-3">
             <div class="col-md-4">
                 <label for="observaciones" class="form-label">Observaciones</label>
-                <textarea name="observaciones" id="observaciones" class="form-control" rows="3" maxlength="250">{{ old('observaciones') }}</textarea>
-                <div class="text-danger mt-1" id="observaciones-error" style="display:none;">El campo no puede tener espacios al inicio y debe tener un máximo de 250 caracteres.</div>
+                <textarea name="observaciones" id="observaciones" class="form-control @error('observaciones') is-invalid @enderror" rows="3" maxlength="250">{{ old('observaciones') }}</textarea>
+                <div class="invalid-feedback" id="observaciones-error">El campo no puede tener espacios al inicio y debe tener un máximo de 250 caracteres.</div>
             </div>
             <div class="col-md-8">
                 <div class="row text-end">
@@ -123,7 +127,6 @@
             </a>
         </div>
     </form>
-    </div>
 
     {{-- Modal para agregar productos --}}
     <div class="modal fade" id="modalProductos" tabindex="-1" aria-labelledby="modalProductosLabel" aria-hidden="true">
@@ -158,23 +161,23 @@
                                     <td>{{ $producto->nombre }}</td>
                                     <td>
                                         <input type="number" id="cantidad_{{ $producto->id }}" class="form-control" value="1" min="1" required style="width: 80px;">
-                                        <div class="text-danger mt-1" id="cantidad_{{ $producto->id }}-error" style="display:none;"></div>
+                                        <div class="invalid-feedback" id="cantidad_{{ $producto->id }}-error"></div>
                                     </td>
                                     <td>
                                         <input type="number" id="precio_compra_{{ $producto->id }}" class="form-control" value="{{ $producto->precio_compra }}" min="0" step="0.01" required style="width: 100px;">
-                                        <div class="text-danger mt-1" id="precio_compra_{{ $producto->id }}-error" style="display:none;"></div>
+                                        <div class="invalid-feedback" id="precio_compra_{{ $producto->id }}-error"></div>
                                     </td>
                                     <td>
                                         <input type="number" id="precio_venta_{{ $producto->id }}" class="form-control" value="{{ $producto->precio_venta }}" min="0" step="0.01" required style="width: 100px;">
-                                        <div class="text-danger mt-1" id="precio_venta_{{ $producto->id }}-error" style="display:none;"></div>
+                                        <div class="invalid-feedback" id="precio_venta_{{ $producto->id }}-error"></div>
                                     </td>
                                     <td>
                                         <input type="number" id="descuento_{{ $producto->id }}" class="form-control" value="0" min="0" step="0.01" required style="width: 80px;">
-                                        <div class="text-danger mt-1" id="descuento_{{ $producto->id }}-error" style="display:none;"></div>
+                                        <div class="invalid-feedback" id="descuento_{{ $producto->id }}-error"></div>
                                     </td>
                                     <td>
                                         <input type="number" id="impuesto_{{ $producto->id }}" class="form-control" value="0" min="0" step="0.01" required style="width: 80px;">
-                                        <div class="text-danger mt-1" id="impuesto_{{ $producto->id }}-error" style="display:none;"></div>
+                                        <div class="invalid-feedback" id="impuesto_{{ $producto->id }}-error"></div>
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-success btn-sm" onclick="agregarProductoDesdeModal({{ $producto->id }})">
@@ -215,9 +218,9 @@
                         productosSeleccionados.push(productoRestaurado);
                     }
                 });
-                renderizarTabla();
-                actualizarTotales();
             }
+            renderizarTabla();
+            actualizarTotales();
 
             const botonAbrirModal = document.getElementById('agregar-productos-btn');
             const modalProductos = document.getElementById('modalProductos');
@@ -259,26 +262,35 @@
             });
         });
 
-        function agregarProductoDesdeModal(productoId) {
-            const producto = productosDisponibles.find(p => p.id === productoId);
-            const productosError = document.getElementById('productos-error');
-            const modalTablaBody = document.querySelector('#tablaModalProductos tbody');
-            const modalMensaje = document.getElementById('modal-mensaje');
-            const modalProductos = document.getElementById('modalProductos');
-            const modal = bootstrap.Modal.getInstance(modalProductos) || new bootstrap.Modal(modalProductos);
-
-            // Limpiar los mensajes de error existentes en el modal
-            modalTablaBody.querySelectorAll('.text-danger').forEach(el => {
-                el.style.display = 'none';
-            });
-            modalTablaBody.querySelectorAll('.is-invalid').forEach(el => {
-                el.classList.remove('is-invalid');
-            });
-
-            if (!producto) {
-                console.error('Error: Producto no encontrado.');
-                return;
+        /**
+         * Valida un campo de entrada y muestra un mensaje de error si es inválido.
+         * @param {HTMLElement} inputElement - El elemento input a validar.
+         * @param {function} validationFn - La función de validación que retorna true si es válido.
+         * @param {string} errorMessage - El mensaje de error a mostrar.
+         * @returns {boolean} - True si el campo es válido, false en caso contrario.
+         */
+        function validateField(inputElement, validationFn, errorMessage) {
+            const errorElement = inputElement.nextElementSibling;
+            if (errorElement) {
+                if (!validationFn(inputElement.value)) {
+                    inputElement.classList.add('is-invalid');
+                    errorElement.textContent = errorMessage;
+                    return false;
+                } else {
+                    inputElement.classList.remove('is-invalid');
+                    return true;
+                }
             }
+            return true;
+        }
+
+        /**
+         * Valida los campos de la fila de un producto en el modal.
+         * @param {string} productoId - El ID del producto.
+         * @returns {boolean} - True si todos los campos son válidos, false en caso contrario.
+         */
+        function validateModalInputs(productoId) {
+            let isValid = true;
 
             const cantidadInput = document.getElementById(`cantidad_${productoId}`);
             const precioCompraInput = document.getElementById(`precio_compra_${productoId}`);
@@ -286,53 +298,47 @@
             const descuentoInput = document.getElementById(`descuento_${productoId}`);
             const impuestoInput = document.getElementById(`impuesto_${productoId}`);
 
-            const cantidadError = document.getElementById(`cantidad_${productoId}-error`);
-            const precioCompraError = document.getElementById(`precio_compra_${productoId}-error`);
-            const precioVentaError = document.getElementById(`precio_venta_${productoId}-error`);
-            const descuentoError = document.getElementById(`descuento_${productoId}-error`);
-            const impuestoError = document.getElementById(`impuesto_${productoId}-error`);
-
-            let valid = true;
-
-            const cantidad = parseInt(cantidadInput.value);
-            const precioCompra = parseFloat(precioCompraInput.value);
-            const precioVenta = parseFloat(precioVentaInput.value);
-            const descuento = parseFloat(descuentoInput.value);
-            const impuesto = parseFloat(impuestoInput.value);
-
-            if (cantidad <= 0 || isNaN(cantidad)) {
-                cantidadInput.classList.add('is-invalid');
-                cantidadError.textContent = 'Debe ser un número mayor a cero.';
-                cantidadError.style.display = 'block';
-                valid = false;
+            // Validación de cantidad
+            if (!validateField(cantidadInput, v => !isNaN(parseInt(v)) && parseInt(v) > 0, 'Debe ser un número mayor a cero.')) {
+                isValid = false;
             }
 
-            if (precioCompra < 0 || isNaN(precioCompra)) {
-                precioCompraInput.classList.add('is-invalid');
-                precioCompraError.textContent = 'No puede ser un valor negativo.';
-                precioCompraError.style.display = 'block';
-                valid = false;
+            // Validación de precio de compra
+            if (!validateField(precioCompraInput, v => !isNaN(parseFloat(v)) && parseFloat(v) >= 0, 'No puede ser un valor negativo.')) {
+                isValid = false;
             }
 
-            if (precioVenta < 0 || isNaN(precioVenta)) {
-                precioVentaInput.classList.add('is-invalid');
-                precioVentaError.textContent = 'No puede ser un valor negativo.';
-                precioVentaError.style.display = 'block';
-                valid = false;
+            // Validación de precio de venta
+            if (!validateField(precioVentaInput, v => !isNaN(parseFloat(v)) && parseFloat(v) >= 0, 'No puede ser un valor negativo.')) {
+                isValid = false;
             }
 
-            if (descuento < 0 || isNaN(descuento)) {
-                descuentoInput.classList.add('is-invalid');
-                descuentoError.textContent = 'No puede ser un valor negativo.';
-                descuentoError.style.display = 'block';
-                valid = false;
+            // Validación de descuento
+            if (!validateField(descuentoInput, v => !isNaN(parseFloat(v)) && parseFloat(v) >= 0, 'No puede ser un valor negativo.')) {
+                isValid = false;
             }
 
-            if (impuesto < 0 || isNaN(impuesto)) {
-                impuestoInput.classList.add('is-invalid');
-                impuestoError.textContent = 'No puede ser un valor negativo.';
-                impuestoError.style.display = 'block';
-                valid = false;
+            // Validación de impuesto
+            if (!validateField(impuestoInput, v => !isNaN(parseFloat(v)) && parseFloat(v) >= 0, 'No puede ser un valor negativo.')) {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function agregarProductoDesdeModal(productoId) {
+            const producto = productosDisponibles.find(p => p.id === productoId);
+            const modalMensaje = document.getElementById('modal-mensaje');
+            const modalProductos = document.getElementById('modalProductos');
+            const modal = bootstrap.Modal.getInstance(modalProductos) || new bootstrap.Modal(modalProductos);
+
+            if (!producto) {
+                console.error('Error: Producto no encontrado.');
+                return;
+            }
+
+            if (!validateModalInputs(productoId)) {
+                return;
             }
 
             if (productosSeleccionados.find(p => p.id === producto.id)) {
@@ -342,15 +348,17 @@
                 setTimeout(() => {
                     modalMensaje.classList.add('d-none');
                 }, 3000);
-                valid = false;
-            }
-
-            if (!valid) {
                 return;
             }
 
             // Limpiar errores si la validación es exitosa
-            productosError.style.display = 'none';
+            document.getElementById('productos-error').style.display = 'none';
+
+            const cantidad = parseInt(document.getElementById(`cantidad_${productoId}`).value);
+            const precioCompra = parseFloat(document.getElementById(`precio_compra_${productoId}`).value);
+            const precioVenta = parseFloat(document.getElementById(`precio_venta_${productoId}`).value);
+            const descuento = parseFloat(document.getElementById(`descuento_${productoId}`).value);
+            const impuesto = parseFloat(document.getElementById(`impuesto_${productoId}`).value);
 
             producto.cantidad = cantidad;
             producto.precio_compra = precioCompra;
@@ -395,38 +403,40 @@
             tbody.innerHTML = '';
 
             if (productosSeleccionados.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="9" id="no-products-message">No se han agregado productos.</td>`;
+                tbody.appendChild(row);
                 document.getElementById('productos-error').style.display = 'block';
             } else {
                 document.getElementById('productos-error').style.display = 'none';
+                productosSeleccionados.forEach((producto, index) => {
+                    let row = document.createElement('tr');
+                    let subtotalProducto = ((producto.cantidad * producto.precio_compra) - producto.descuento);
+                    let ivaProducto = subtotalProducto * (producto.impuesto / 100);
+                    let totalProducto = subtotalProducto + ivaProducto;
+
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>
+                            ${producto.nombre}
+                            <input type="hidden" name="detalles[${index}][producto_id]" value="${producto.id}">
+                            <input type="hidden" name="detalles[${index}][cantidad]" value="${producto.cantidad}">
+                            <input type="hidden" name="detalles[${index}][precio_unitario]" value="${producto.precio_compra}">
+                            <input type="hidden" name="detalles[${index}][precio_venta]" value="${producto.precio_venta}">
+                            <input type="hidden" name="detalles[${index}][descuento]" value="${producto.descuento}">
+                            <input type="hidden" name="detalles[${index}][impuesto]" value="${producto.impuesto}">
+                        </td>
+                        <td>${producto.cantidad}</td>
+                        <td>${(producto.precio_compra).toFixed(2)}</td>
+                        <td>${(producto.precio_venta).toFixed(2)}</td>
+                        <td>${(producto.descuento).toFixed(2)}</td>
+                        <td>${producto.impuesto}%</td>
+                        <td>${(totalProducto).toFixed(2)}</td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})">Eliminar</button></td>
+                    `;
+                    tbody.appendChild(row);
+                });
             }
-
-            productosSeleccionados.forEach((producto, index) => {
-                let row = document.createElement('tr');
-                let subtotalProducto = ((producto.cantidad * producto.precio_compra) - producto.descuento);
-                let ivaProducto = subtotalProducto * (producto.impuesto / 100);
-                let totalProducto = subtotalProducto + ivaProducto;
-
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>
-                        ${producto.nombre}
-                        <input type="hidden" name="detalles[${index}][producto_id]" value="${producto.id}">
-                        <input type="hidden" name="detalles[${index}][cantidad]" value="${producto.cantidad}">
-                        <input type="hidden" name="detalles[${index}][precio_unitario]" value="${producto.precio_compra}">
-                        <input type="hidden" name="detalles[${index}][precio_venta]" value="${producto.precio_venta}">
-                        <input type="hidden" name="detalles[${index}][descuento]" value="${producto.descuento}">
-                        <input type="hidden" name="detalles[${index}][impuesto]" value="${producto.impuesto}">
-                    </td>
-                    <td>${producto.cantidad}</td>
-                    <td>${(producto.precio_compra).toFixed(2)}</td>
-                    <td>${(producto.precio_venta).toFixed(2)}</td>
-                    <td>${(producto.descuento).toFixed(2)}</td>
-                    <td>${producto.impuesto}%</td>
-                    <td>${(totalProducto).toFixed(2)}</td>
-                    <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})">Eliminar</button></td>
-                `;
-                tbody.appendChild(row);
-            });
         }
 
         function eliminarProducto(index) {
@@ -438,59 +448,32 @@
         document.getElementById('formFactura').addEventListener('submit', function(e) {
             let isValid = true;
 
-            // Campos de selección
-            const camposSelect = ['empleado_id', 'proveedor_id'];
-            camposSelect.forEach(campoId => {
-                const campo = document.getElementById(campoId);
-                const errorDiv = document.getElementById(`${campoId}-error`);
-
-                if (campo.value.trim() === '') {
-                    campo.classList.add('is-invalid');
-                    errorDiv.style.display = 'block';
-                    isValid = false;
-                } else {
-                    campo.classList.remove('is-invalid');
-                    errorDiv.style.display = 'none';
-                }
-            });
-
-            // Campo de fecha
-            const fecha = document.getElementById('fecha');
-            const fechaError = document.getElementById('fecha-error');
-            if (fecha.value === '') {
-                fecha.classList.add('is-invalid');
-                fechaError.style.display = 'block';
-                isValid = false;
-            } else {
-                fecha.classList.remove('is-invalid');
-                fechaError.style.display = 'none';
-            }
-
-            // Campo de código
-            const codigo = document.getElementById('codigo');
-            const codigoError = document.getElementById('codigo-error');
-            const codigoValue = codigo.value;
-            if (codigoValue.trim() === '' || codigoValue.startsWith(' ') || codigoValue.length > 12) {
-                codigo.classList.add('is-invalid');
-                codigoError.style.display = 'block';
-                isValid = false;
-            } else {
-                codigo.classList.remove('is-invalid');
-                codigoError.style.display = 'none';
-            }
-
-            // Campo de observaciones
-            const observaciones = document.getElementById('observaciones');
-            const observacionesError = document.getElementById('observaciones-error');
-            const observacionesValue = observaciones.value;
-            if (observacionesValue.startsWith(' ') || observacionesValue.length > 250) {
-                observaciones.classList.add('is-invalid');
-                observacionesError.style.display = 'block';
-                isValid = false;
-            } else {
-                observaciones.classList.remove('is-invalid');
-                observacionesError.style.display = 'none';
-            }
+            // Validación de los campos principales
+            const empleadoValid = validateField(
+                document.getElementById('empleado_id'),
+                v => v.trim() !== '',
+                'Seleccione un empleado.'
+            );
+            const proveedorValid = validateField(
+                document.getElementById('proveedor_id'),
+                v => v.trim() !== '',
+                'Seleccione un proveedor.'
+            );
+            const codigoValid = validateField(
+                document.getElementById('codigo'),
+                v => v.trim() !== '' && !v.startsWith(' ') && v.length <= 12,
+                'El código es necesario, no puede tener espacios iniciales y debe tener un máximo de 12 caracteres.'
+            );
+            const fechaValid = validateField(
+                document.getElementById('fecha'),
+                v => v.trim() !== '',
+                'Este campo es necesario.'
+            );
+            const observacionesValid = validateField(
+                document.getElementById('observaciones'),
+                v => !v.startsWith(' ') && v.length <= 250,
+                'No puede tener espacios al inicio y debe tener un máximo de 250 caracteres.'
+            );
 
             // Validación de productos
             const productosError = document.getElementById('productos-error');
@@ -501,12 +484,14 @@
                 productosError.style.display = 'none';
             }
 
+            isValid = empleadoValid && proveedorValid && codigoValid && fechaValid && observacionesValid && isValid;
+
             if (!isValid) {
                 e.preventDefault();
             }
         });
 
-        // Limpieza de campos al escribir
+        // Limpieza de campos al escribir para evitar espacios iniciales
         document.getElementById('codigo').addEventListener('input', function() {
             this.value = this.value.trimStart();
         });
@@ -527,14 +512,12 @@
             // Limpiar los totales
             actualizarTotales();
 
-            // Ocultar todos los mensajes de error
-            document.querySelectorAll('.text-danger, .invalid-feedback, .alert-danger').forEach(el => {
-                el.style.display = 'none';
-            });
-
-            // Remover las clases de validación
+            // Ocultar todos los mensajes de error y remover clases de validación
             document.querySelectorAll('.is-invalid').forEach(el => {
                 el.classList.remove('is-invalid');
+            });
+            document.querySelectorAll('.alert, .text-danger').forEach(el => {
+                el.style.display = 'none';
             });
         });
 

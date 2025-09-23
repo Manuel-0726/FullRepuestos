@@ -33,8 +33,7 @@
                     <p class="mb-1"><strong>Año:</strong> <?php echo e($producto->anio); ?></p>
                     <p class="mb-1"><strong>Categoría:</strong> <?php echo e($producto->categoria); ?></p>
                     <p class="mb-1"><strong>Descripción:</strong> <?php echo e($producto->descripcion); ?></p> 
-                    <p class="mb-1"><strong>Precio:</strong> L. <?php echo e(number_format($producto->precio, 2)); ?></p> 
-                    <p class="mb-1"><strong>Stock:</strong> <?php echo e($producto->stock); ?> unidades</p> 
+                    
                 </div>
 
                 <hr class="border-secondary mb-4">

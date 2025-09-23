@@ -215,10 +215,20 @@ endif;
 unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="marcas" class="form-label">Marcas que maneja *</label>
+                        <div class="mb-3 col-md-6">
+                            <label for="marcas" class="form-label text-white">Marcas que maneja *</label>
                             <select name="marcas[]" id="marcas" multiple required
-                                    class="form-select bg-dark text-white <?php $__errorArgs = ['marcas'];
+<<<<<<< HEAD
+                                    class="form-control bg-dark text-white border-secondary <?php $__errorArgs = ['marcas'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+=======
+                                    class="form-select bg-dark text-black <?php $__errorArgs = ['marcas'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -227,6 +237,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                     style="background-color: #343a40 !important; color: #fff !important;">
+>>>>>>> 6c35c193f7eec8cb5d8ea02dcd795e77cca3784f
                                 <option value="" disabled>Seleccione marcas...</option>
                                 <option value="Toyota" <?php echo e(in_array('Toyota', old('marcas', [])) ? 'selected' : ''); ?>>Toyota</option>
                                 <option value="Honda" <?php echo e(in_array('Honda', old('marcas', [])) ? 'selected' : ''); ?>>Honda</option>
@@ -259,8 +270,8 @@ unset($__errorArgs, $__bag); ?>
 
 
                         <div class="col-md-6 mb-3">
-                            <label for="tipo_autopartes" class="form-label">Tipo de Autopartes *</label>
-                            <select class="form-select <?php $__errorArgs = ['tipo_autopartes'];
+                            <label for="tipo_autopartes" class="form-label text-white">Tipo de Autopartes *</label>
+                            <select class="form-control bg-dark text-white <?php $__errorArgs = ['tipo_autopartes'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }

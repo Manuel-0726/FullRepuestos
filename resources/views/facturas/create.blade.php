@@ -107,10 +107,16 @@
                     <button type="button" class="btn-danger" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="d-flex justify-content-start gap-2 mb-3">
+                        <button type="button" class="btn btn-outline-light active" id="btnCarros">Carros</button>
+                        <button type="button" class="btn btn-outline-light" id="btnMotos">Motos</button>
+                    </div>
+
                     <input type="text" id="buscarProducto" class="form-control mb-3" placeholder="Buscar producto...">
 
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover align-middle" id="tablaProductos">
+                    {{-- Tabla de Productos de Carro --}}
+                    <div class="table-responsive product-table" id="carTableContainer">
+                        <table class="table table-dark table-hover align-middle">
                             <thead>
                             <tr>
                                 <th>Producto</th>
@@ -125,8 +131,8 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($productos as $producto)
-                                <tr>
+                            @foreach($productosCarro as $producto)
+                                <tr data-categoria="{{ $producto->categoria }}">
                                     <td>{{ $producto->nombre }}</td>
                                     <td>{{ $producto->marca }}</td>
                                     <td>{{ $producto->modelo }}</td>
@@ -134,7 +140,60 @@
                                     <td>{{ $producto->stock }}</td>
                                     <td>
                                         <input type="number" min="1" max="{{ $producto->stock }}" value="1"
-                                               class="form-control cantidad-input @error('detalles') is-invalid @enderror"
+                                               class="form-control cantidad-input"
+                                               style="width: 80px;" required>
+                                        <div class="invalid-feedback">Ingrese una cantidad válida.</div>
+                                    </td>
+                                    <td>{{ number_format($producto->precio_venta, 2) }}</td>
+                                    <td>{{ $producto->impuesto }}</td>
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-success btn-sm btn-agregar-producto"
+                                                data-id="{{ $producto->id }}"
+                                                data-nombre="{{ $producto->nombre }}"
+                                                data-marca="{{ $producto->marca }}"
+                                                data-modelo="{{ $producto->modelo }}"
+                                                data-anio="{{ $producto->anio }}"
+                                                data-stock="{{ $producto->stock }}"
+                                                data-precio="{{ $producto->precio_venta }}"
+                                                data-iva="{{ $producto->impuesto }}">
+                                            Agregar
+                                        </button>
+                                        <div class="duplicate-product-message text-danger mt-1" style="display:none;"></div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{-- Tabla de Productos de Moto --}}
+                    <div class="table-responsive product-table" id="motoTableContainer" style="display: none;">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Año</th>
+                                <th>Stock</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario (L.)</th>
+                                <th>IVA (%)</th>
+                                <th>Acción</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($productosMoto as $producto)
+                                <tr data-categoria="{{ $producto->categoria }}">
+                                    <td>{{ $producto->nombre }}</td>
+                                    <td>{{ $producto->marca }}</td>
+                                    <td>{{ $producto->modelo }}</td>
+                                    <td>{{ $producto->anio }}</td>
+                                    <td>{{ $producto->stock }}</td>
+                                    <td>
+                                        <input type="number" min="1" max="{{ $producto->stock }}" value="1"
+                                               class="form-control cantidad-input"
                                                style="width: 80px;" required>
                                         <div class="invalid-feedback">Ingrese una cantidad válida.</div>
                                     </td>
@@ -175,7 +234,6 @@
             const clearButton = document.getElementById('limpiarFormulario');
             const jsAlertMessage = document.getElementById('js-alert-message');
 
-            const tablaProductosBody = document.querySelector('#tablaProductos tbody');
             const productosSeleccionadosBody = document.querySelector('#productosSeleccionados tbody');
 
             // Array to hold the selected products
@@ -202,18 +260,41 @@
                 form.classList.add('was-validated');
             }, false);
 
-            // Filters products in the modal table
+            // Filtra productos en el modal por los botones Carro y Moto
+            const btnCarros = document.getElementById('btnCarros');
+            const btnMotos = document.getElementById('btnMotos');
+            const carTableContainer = document.getElementById('carTableContainer');
+            const motoTableContainer = document.getElementById('motoTableContainer');
+
+            btnCarros.addEventListener('click', function() {
+                btnCarros.classList.add('active');
+                btnMotos.classList.remove('active');
+                carTableContainer.style.display = 'block';
+                motoTableContainer.style.display = 'none';
+            });
+
+            btnMotos.addEventListener('click', function() {
+                btnMotos.classList.add('active');
+                btnCarros.classList.remove('active');
+                motoTableContainer.style.display = 'block';
+                carTableContainer.style.display = 'none';
+            });
+
+            // Filtra productos en la tabla visible
             const buscarProductoInput = document.getElementById('buscarProducto');
             buscarProductoInput.addEventListener('input', function () {
                 const filtro = this.value.toLowerCase();
-                Array.from(tablaProductosBody.rows).forEach(row => {
+                const visibleTable = document.querySelector('.product-table:not([style*="display: none"])');
+                const allRows = visibleTable.querySelectorAll('tbody tr');
+                allRows.forEach(row => {
                     const textoFila = row.innerText.toLowerCase();
                     row.style.display = textoFila.includes(filtro) ? '' : 'none';
                 });
             });
 
             // Handles adding a product from the modal
-            tablaProductosBody.addEventListener('click', function (e) {
+            const modalProductosEl = document.getElementById('modalProductos');
+            modalProductosEl.addEventListener('click', function (e) {
                 if (e.target.classList.contains('btn-agregar-producto')) {
                     const btn = e.target;
                     const id = btn.dataset.id;
@@ -230,7 +311,7 @@
                     // Check for invalid quantity
                     const stock = parseInt(btn.dataset.stock);
                     if (cantidad < 1 || cantidad > stock || isNaN(cantidad)) {
-                        messageDiv.textContent = 'Cantidad inválida.';
+                        messageDiv.textContent = 'Cantidad inválida. Máximo disponible: ' + stock;
                         messageDiv.style.display = 'block';
                         cantidadInput.classList.add('is-invalid');
                         // Make the message disappear after 3 seconds
@@ -388,11 +469,10 @@
             });
 
             // Resets the search filter and modal message when the modal is closed
-            const modalProductosEl = document.getElementById('modalProductos');
             if (modalProductosEl) {
                 modalProductosEl.addEventListener('hidden.bs.modal', function () {
                     buscarProductoInput.value = '';
-                    Array.from(tablaProductosBody.rows).forEach(row => {
+                    Array.from(document.querySelectorAll('.product-table tbody tr')).forEach(row => {
                         row.style.display = '';
                     });
                     document.querySelectorAll('.duplicate-product-message').forEach(el => el.style.display = 'none');

@@ -2,134 +2,239 @@
 
 <?php $__env->startSection('content'); ?>
     <div class="container text-white-justify-center">
-
-        <h2 class="mb-3">Registrar factura de compra</h2> <!-- margen inferior pequeño -->
-
-        <div class="d-flex justify-content-start align-items-center mb-4"> <!-- margen inferior menor -->
-            <a href="<?php echo e(route('facturas-compra.index')); ?>" class="btn btn-danger">
-                Volver
-            </a>
-        </div>
-
-    </div>
-
-
-    <?php if(session('error')): ?>
-            <div class="alert alert-danger">
-                <?php echo e(session('error')); ?>
-
-            </div>
-        <?php endif; ?>
-
-        <?php if($errors->any()): ?>
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <li><?php echo e($error); ?></li>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </ul>
-            </div>
-        <?php endif; ?>
-
-        <form action="<?php echo e(route('facturas-compra.store')); ?>" method="POST" id="formFactura">
-            <?php echo csrf_field(); ?>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="empleado_id" class="form-label">Empleado</label>
-                    <select name="empleado_id" id="empleado_id" class="form-select" required>
-                        <option value="">Seleccione un empleado</option>
-                        <?php $__currentLoopData = $empleados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $empleado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($empleado->id); ?>" <?php echo e(old('empleado_id') == $empleado->id ? 'selected' : ''); ?>>
-                                <?php echo e($empleado->nombre); ?>
-
-                            </option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
-                    <div class="text-danger mt-1" id="empleado_id-error" style="display:none;">Este campo es necesario.</div>
-                </div>
-                <div class="col-md-6">
-                    <label for="proveedor_id" class="form-label">Proveedor</label>
-                    <select name="proveedor_id" id="proveedor_id" class="form-select" required>
-                        <option value="">Seleccione un proveedor</option>
-                        <?php $__currentLoopData = $proveedores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $proveedor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($proveedor->id); ?>" <?php echo e(old('proveedor_id') == $proveedor->id ? 'selected' : ''); ?>>
-                                <?php echo e($proveedor->nombre_empresa); ?>
-
-                            </option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
-                    <div class="text-danger mt-1" id="proveedor_id-error" style="display:none;">Este campo es necesario.</div>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="codigo" class="form-label">Código de Factura</label>
-                    <input type="text" name="codigo" id="codigo" class="form-control" value="<?php echo e(old('codigo')); ?>" required maxlength="12">
-                    <div class="text-danger mt-1" id="codigo-error" style="display:none;">Este campo es necesario, no puede tener espacios al inicio y debe tener un máximo de 12 caracteres.</div>
-                </div>
-                <div class="col-md-6">
-                    <label for="fecha" class="form-label">Fecha de Compra</label>
-                    <input type="date" name="fecha" id="fecha" class="form-control" value="<?php echo e(old('fecha', date('Y-m-d'))); ?>" required>
-                    <div class="text-danger mt-1" id="fecha-error" style="display:none;">Este campo es necesario.</div>
-                </div>
-            </div>
-
-            <div class="mb-3 text-end">
-                <button type="button" class="btn btn-danger" id="agregar-productos-btn" data-bs-toggle="modal" data-bs-target="#modalProductos">
-                    Agregar Productos
-                </button>
-            </div>
-
-            <div class="table-responsive table-container mb-4">
-                <table class="table table-dark table-bordered align-middle text-center" id="tablaProductos">
-                    <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Precio Compra</th>
-                        <th>Precio Venta</th>
-                        <th>Descuento</th>
-                        <th>IVA</th>
-                        <th>Subtotal</th>
-                        <th>Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <div class="text-danger mb-3" id="productos-error" style="display:none;">
-                Debe agregar al menos un producto para guardar la factura.
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="observaciones" class="form-label">Observaciones</label>
-                    <textarea name="observaciones" id="observaciones" class="form-control" rows="3" maxlength="250"><?php echo e(old('observaciones')); ?></textarea>
-                    <div class="text-danger mt-1" id="observaciones-error" style="display:none;">Este campo es necesario, no puede tener espacios al inicio y debe tener un máximo de 250 caracteres.</div>
-                </div>
-                <div class="col-md-8">
-                    <div class="row text-end">
-                        <div class="col-6"><strong>Subtotal Factura:</strong></div>
-                        <div class="col-6"><span id="subtotalFactura">0.00</span></div>
-                        <div class="col-6"><strong>IVA Total Factura:</strong></div>
-                        <div class="col-6"><span id="ivaTotalFactura">0.00</span></div>
-                        <div class="col-6"><strong>Total Factura:</strong></div>
-                        <div class="col-6"><span id="totalFactura">0.00</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-end">
-                <button type="submit" class="btn btn-danger">Guardar factura</button>
-            </div>
-        </form>
+        <h2 class="mb-3">Registrar factura de compra</h2>
     </div>
 
     
-    <?php echo $__env->make('facturaCompra.modal-factura-compra', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <?php if(session('error')): ?>
+        <div class="alert alert-danger">
+            <?php echo e(session('error')); ?>
+
+        </div>
+    <?php endif; ?>
+
+    
+    <?php if($errors->any()): ?>
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
+    <form action="<?php echo e(route('facturas-compra.store')); ?>" method="POST" id="formFactura">
+        <?php echo csrf_field(); ?>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="empleado_id" class="form-label">Empleado</label>
+                <select name="empleado_id" id="empleado_id" class="form-select <?php $__errorArgs = ['empleado_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                    <option value="">Seleccione un empleado</option>
+                    <?php $__currentLoopData = $empleados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $empleado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($empleado->id); ?>" <?php echo e(old('empleado_id') == $empleado->id ? 'selected' : ''); ?>>
+                            <?php echo e($empleado->nombre); ?>
+
+                        </option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+                <div class="invalid-feedback" id="empleado_id-error">Seleccione un empleado.</div>
+            </div>
+            <div class="col-md-6">
+                <label for="proveedor_id" class="form-label">Proveedor</label>
+                <select name="proveedor_id" id="proveedor_id" class="form-select <?php $__errorArgs = ['proveedor_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                    <option value="">Seleccione un proveedor</option>
+                    <?php $__currentLoopData = $proveedores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $proveedor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($proveedor->id); ?>" <?php echo e(old('proveedor_id') == $proveedor->id ? 'selected' : ''); ?>>
+                            <?php echo e($proveedor->nombre_empresa); ?>
+
+                        </option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+                <div class="invalid-feedback" id="proveedor_id-error">Seleccione un proveedor.</div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="codigo" class="form-label">Código de Factura</label>
+                <input type="text" name="codigo" id="codigo" class="form-control <?php $__errorArgs = ['codigo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" value="<?php echo e(old('codigo')); ?>" maxlength="12">
+                <div class="invalid-feedback" id="codigo-error">El código de la factura es necesario y no puede tener espacios iniciales.</div>
+            </div>
+            <div class="col-md-6">
+                <label for="fecha" class="form-label">Fecha de Compra</label>
+                <input type="date" name="fecha" id="fecha" class="form-control <?php $__errorArgs = ['fecha'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" value="<?php echo e(old('fecha', date('Y-m-d'))); ?>">
+                <div class="invalid-feedback" id="fecha-error">Este campo es necesario.</div>
+            </div>
+        </div>
+
+        <div class="mb-3 text-end">
+            <button type="button" class="btn btn-danger" id="agregar-productos-btn" data-bs-toggle="modal" data-bs-target="#modalProductos">
+                Agregar Productos
+            </button>
+        </div>
+
+        <div class="table-responsive table-container mb-4">
+            <table class="table table-dark table-bordered align-middle text-center" id="tablaProductos">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Compra</th>
+                    <th>Precio Venta</th>
+                    <th>Descuento</th>
+                    <th>IVA</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="9" id="no-products-message">
+                        No se han agregado productos.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-danger mb-3" id="productos-error" style="display:none;">
+            Debe agregar al menos un producto para guardar la factura.
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="observaciones" class="form-label">Observaciones</label>
+                <textarea name="observaciones" id="observaciones" class="form-control <?php $__errorArgs = ['observaciones'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" rows="3" maxlength="250"><?php echo e(old('observaciones')); ?></textarea>
+                <div class="invalid-feedback" id="observaciones-error">El campo no puede tener espacios al inicio y debe tener un máximo de 250 caracteres.</div>
+            </div>
+            <div class="col-md-8">
+                <div class="row text-end">
+                    <div class="col-6"><strong>Subtotal Factura:</strong></div>
+                    <div class="col-6"><span id="subtotalFactura">0.00</span></div>
+                    <div class="col-6"><strong>IVA Total Factura:</strong></div>
+                    <div class="col-6"><span id="ivaTotalFactura">0.00</span></div>
+                    <div class="col-6"><strong>Total Factura:</strong></div>
+                    <div class="col-6"><span id="totalFactura">0.00</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end">
+            <button type="submit" class="btn btn-danger">Guardar factura</button>
+            <button type="button" class="btn btn-danger" id="limpiarFormulario">Limpiar</button>
+            <a href="<?php echo e(route('facturas-compra.index')); ?>" class="btn btn-danger">
+                Cancelar
+            </a>
+        </div>
+    </form>
+
+    
+    <div class="modal fade" id="modalProductos" tabindex="-1" aria-labelledby="modalProductosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalProductosLabel">Seleccionar y Agregar Productos</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="text" id="filtro-productos" class="form-control" placeholder="Buscar producto...">
+                        <div id="filtro-mensaje" class="text-info mt-2" style="display:none;">No se encontraron productos.</div>
+                    </div>
+                    <div id="modal-mensaje" class="alert d-none" role="alert"></div>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle text-center" id="tablaModalProductos">
+                            <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Compra</th>
+                                <th>Precio Venta</th>
+                                <th>Descuento (%)</th>
+                                <th>IVA (%)</th>
+                                <th>Acción</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php $__currentLoopData = $productos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <tr>
+                                    <td><?php echo e($producto->nombre); ?></td>
+                                    <td>
+                                        <input type="number" id="cantidad_<?php echo e($producto->id); ?>" class="form-control" value="1" min="1" required style="width: 80px;">
+                                        <div class="invalid-feedback" id="cantidad_<?php echo e($producto->id); ?>-error"></div>
+                                    </td>
+                                    <td>
+                                        <input type="number" id="precio_compra_<?php echo e($producto->id); ?>" class="form-control" value="<?php echo e($producto->precio_compra); ?>" min="0" step="0.01" required style="width: 100px;">
+                                        <div class="invalid-feedback" id="precio_compra_<?php echo e($producto->id); ?>-error"></div>
+                                    </td>
+                                    <td>
+                                        <input type="number" id="precio_venta_<?php echo e($producto->id); ?>" class="form-control" value="<?php echo e($producto->precio_venta); ?>" min="0" step="0.01" required style="width: 100px;">
+                                        <div class="invalid-feedback" id="precio_venta_<?php echo e($producto->id); ?>-error"></div>
+                                    </td>
+                                    <td>
+                                        <input type="number" id="descuento_<?php echo e($producto->id); ?>" class="form-control" value="0" min="0" step="0.01" required style="width: 80px;">
+                                        <div class="invalid-feedback" id="descuento_<?php echo e($producto->id); ?>-error"></div>
+                                    </td>
+                                    <td>
+                                        <input type="number" id="impuesto_<?php echo e($producto->id); ?>" class="form-control" value="0" min="0" step="0.01" required style="width: 80px;">
+                                        <div class="invalid-feedback" id="impuesto_<?php echo e($producto->id); ?>-error"></div>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-success btn-sm" onclick="agregarProductoDesdeModal(<?php echo e($producto->id); ?>)">
+                                            Agregar
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         const productosDisponibles = <?php echo json_encode($productos, 15, 512) ?>;
@@ -151,34 +256,79 @@
                         productosSeleccionados.push(productoRestaurado);
                     }
                 });
-                renderizarTabla();
-                actualizarTotales();
             }
+            renderizarTabla();
+            actualizarTotales();
 
             const botonAbrirModal = document.getElementById('agregar-productos-btn');
             const modalProductos = document.getElementById('modalProductos');
 
             if (modalProductos) {
                 modalProductos.addEventListener('hidden.bs.modal', function () {
+                    // Limpiar el filtro y mostrar todos los productos al cerrar el modal
+                    document.getElementById('filtro-productos').value = '';
+                    const filas = document.querySelectorAll('#tablaModalProductos tbody tr');
+                    filas.forEach(fila => fila.style.display = '');
+                    document.getElementById('filtro-mensaje').style.display = 'none';
+
                     if (botonAbrirModal) {
                         botonAbrirModal.focus();
                     }
                 });
             }
+
+            // Lógica para el filtro de productos
+            document.getElementById('filtro-productos').addEventListener('input', function(e) {
+                const filtro = e.target.value.toLowerCase();
+                const filas = document.querySelectorAll('#tablaModalProductos tbody tr');
+                let productosVisibles = 0;
+                filas.forEach(fila => {
+                    const nombreProducto = fila.querySelector('td:first-child').textContent.toLowerCase();
+                    if (nombreProducto.includes(filtro)) {
+                        fila.style.display = '';
+                        productosVisibles++;
+                    } else {
+                        fila.style.display = 'none';
+                    }
+                });
+
+                if (productosVisibles === 0 && filtro.length > 0) {
+                    document.getElementById('filtro-mensaje').style.display = 'block';
+                } else {
+                    document.getElementById('filtro-mensaje').style.display = 'none';
+                }
+            });
         });
 
-        function agregarProductoDesdeModal(productoId) {
-            const producto = productosDisponibles.find(p => p.id === productoId);
-
-            if (!producto) {
-                alert('Error: Producto no encontrado.');
-                return;
+        /**
+         * Valida un campo de entrada y muestra un mensaje de error si es inválido.
+         * @param {HTMLElement} inputElement - El elemento input a validar.
+         * @param {function} validationFn - La función de validación que retorna true si es válido.
+         * @param {string} errorMessage - El mensaje de error a mostrar.
+         * @returns {boolean} - True si el campo es válido, false en caso contrario.
+         */
+        function validateField(inputElement, validationFn, errorMessage) {
+            const errorElement = inputElement.nextElementSibling;
+            if (errorElement) {
+                if (!validationFn(inputElement.value)) {
+                    inputElement.classList.add('is-invalid');
+                    errorElement.textContent = errorMessage;
+                    return false;
+                } else {
+                    inputElement.classList.remove('is-invalid');
+                    return true;
+                }
             }
+            return true;
+        }
 
-            if (productosSeleccionados.find(p => p.id === producto.id)) {
-                alert('Este producto ya ha sido agregado.');
-                return;
-            }
+        /**
+         * Valida los campos de la fila de un producto en el modal.
+         * @param {string} productoId - El ID del producto.
+         * @returns {boolean} - True si todos los campos son válidos, false en caso contrario.
+         */
+        function validateModalInputs(productoId) {
+            let isValid = true;
 
             const cantidadInput = document.getElementById(`cantidad_${productoId}`);
             const precioCompraInput = document.getElementById(`precio_compra_${productoId}`);
@@ -186,32 +336,67 @@
             const descuentoInput = document.getElementById(`descuento_${productoId}`);
             const impuestoInput = document.getElementById(`impuesto_${productoId}`);
 
-            const cantidad = parseInt(cantidadInput.value);
-            const precioCompra = parseFloat(precioCompraInput.value);
-            const precioVenta = parseFloat(precioVentaInput.value);
-            const descuento = parseFloat(descuentoInput.value);
-            const impuesto = parseFloat(impuestoInput.value);
+            // Validación de cantidad
+            if (!validateField(cantidadInput, v => !isNaN(parseInt(v)) && parseInt(v) > 0, 'Debe ser un número mayor a cero.')) {
+                isValid = false;
+            }
 
-            if (cantidad <= 0 || isNaN(cantidad)) {
-                alert('La cantidad debe ser un número mayor a cero.');
+            // Validación de precio de compra
+            if (!validateField(precioCompraInput, v => !isNaN(parseFloat(v)) && parseFloat(v) >= 0, 'No puede ser un valor negativo.')) {
+                isValid = false;
+            }
+
+            // Validación de precio de venta
+            if (!validateField(precioVentaInput, v => !isNaN(parseFloat(v)) && parseFloat(v) >= 0, 'No puede ser un valor negativo.')) {
+                isValid = false;
+            }
+
+            // Validación de descuento
+            if (!validateField(descuentoInput, v => !isNaN(parseFloat(v)) && parseFloat(v) >= 0, 'No puede ser un valor negativo.')) {
+                isValid = false;
+            }
+
+            // Validación de impuesto
+            if (!validateField(impuestoInput, v => !isNaN(parseFloat(v)) && parseFloat(v) >= 0, 'No puede ser un valor negativo.')) {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function agregarProductoDesdeModal(productoId) {
+            const producto = productosDisponibles.find(p => p.id === productoId);
+            const modalMensaje = document.getElementById('modal-mensaje');
+            const modalProductos = document.getElementById('modalProductos');
+            const modal = bootstrap.Modal.getInstance(modalProductos) || new bootstrap.Modal(modalProductos);
+
+            if (!producto) {
+                console.error('Error: Producto no encontrado.');
                 return;
             }
-            if (precioCompra < 0 || isNaN(precioCompra)) {
-                alert('El precio de compra no puede ser un valor negativo.');
+
+            if (!validateModalInputs(productoId)) {
                 return;
             }
-            if (precioVenta < 0 || isNaN(precioVenta)) {
-                alert('El precio de venta no puede ser un valor negativo.');
+
+            if (productosSeleccionados.find(p => p.id === producto.id)) {
+                modalMensaje.textContent = 'Este producto ya ha sido agregado.';
+                modalMensaje.classList.remove('d-none', 'alert-success');
+                modalMensaje.classList.add('alert-danger');
+                setTimeout(() => {
+                    modalMensaje.classList.add('d-none');
+                }, 3000);
                 return;
             }
-            if (descuento < 0 || isNaN(descuento)) {
-                alert('El descuento no puede ser un valor negativo.');
-                return;
-            }
-            if (impuesto < 0 || isNaN(impuesto)) {
-                alert('El IVA no puede ser un valor negativo.');
-                return;
-            }
+
+            // Limpiar errores si la validación es exitosa
+            document.getElementById('productos-error').style.display = 'none';
+
+            const cantidad = parseInt(document.getElementById(`cantidad_${productoId}`).value);
+            const precioCompra = parseFloat(document.getElementById(`precio_compra_${productoId}`).value);
+            const precioVenta = parseFloat(document.getElementById(`precio_venta_${productoId}`).value);
+            const descuento = parseFloat(document.getElementById(`descuento_${productoId}`).value);
+            const impuesto = parseFloat(document.getElementById(`impuesto_${productoId}`).value);
 
             producto.cantidad = cantidad;
             producto.precio_compra = precioCompra;
@@ -223,8 +408,6 @@
             renderizarTabla();
             actualizarTotales();
 
-            const modalProductos = document.getElementById('modalProductos');
-            const modal = bootstrap.Modal.getInstance(modalProductos) || new bootstrap.Modal(modalProductos);
             modal.hide();
         }
 
@@ -258,37 +441,40 @@
             tbody.innerHTML = '';
 
             if (productosSeleccionados.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="9" id="no-products-message">No se han agregado productos.</td>`;
+                tbody.appendChild(row);
                 document.getElementById('productos-error').style.display = 'block';
             } else {
                 document.getElementById('productos-error').style.display = 'none';
+                productosSeleccionados.forEach((producto, index) => {
+                    let row = document.createElement('tr');
+                    let subtotalProducto = ((producto.cantidad * producto.precio_compra) - producto.descuento);
+                    let ivaProducto = subtotalProducto * (producto.impuesto / 100);
+                    let totalProducto = subtotalProducto + ivaProducto;
+
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>
+                            ${producto.nombre}
+                            <input type="hidden" name="detalles[${index}][producto_id]" value="${producto.id}">
+                            <input type="hidden" name="detalles[${index}][cantidad]" value="${producto.cantidad}">
+                            <input type="hidden" name="detalles[${index}][precio_unitario]" value="${producto.precio_compra}">
+                            <input type="hidden" name="detalles[${index}][precio_venta]" value="${producto.precio_venta}">
+                            <input type="hidden" name="detalles[${index}][descuento]" value="${producto.descuento}">
+                            <input type="hidden" name="detalles[${index}][impuesto]" value="${producto.impuesto}">
+                        </td>
+                        <td>${producto.cantidad}</td>
+                        <td>${(producto.precio_compra).toFixed(2)}</td>
+                        <td>${(producto.precio_venta).toFixed(2)}</td>
+                        <td>${(producto.descuento).toFixed(2)}</td>
+                        <td>${producto.impuesto}%</td>
+                        <td>${(totalProducto).toFixed(2)}</td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})">Eliminar</button></td>
+                    `;
+                    tbody.appendChild(row);
+                });
             }
-
-            productosSeleccionados.forEach((producto, index) => {
-                let row = document.createElement('tr');
-                let subtotalProducto = ((producto.cantidad * producto.precio_compra) - producto.descuento);
-                let ivaProducto = subtotalProducto * (producto.impuesto / 100);
-                let totalProducto = subtotalProducto + ivaProducto;
-
-                row.innerHTML = `
-                    <td>
-                        ${producto.nombre}
-                        <input type="hidden" name="detalles[${index}][producto_id]" value="${producto.id}">
-                        <input type="hidden" name="detalles[${index}][cantidad]" value="${producto.cantidad}">
-                        <input type="hidden" name="detalles[${index}][precio_unitario]" value="${producto.precio_compra}">
-                        <input type="hidden" name="detalles[${index}][precio_venta]" value="${producto.precio_venta}">
-                        <input type="hidden" name="detalles[${index}][descuento]" value="${producto.descuento}">
-                        <input type="hidden" name="detalles[${index}][impuesto]" value="${producto.impuesto}">
-                    </td>
-                    <td>${producto.cantidad}</td>
-                    <td>${(producto.precio_compra).toFixed(2)}</td>
-                    <td>${(producto.precio_venta).toFixed(2)}</td>
-                    <td>${(producto.descuento).toFixed(2)}</td>
-                    <td>${producto.impuesto}%</td>
-                    <td>${(totalProducto).toFixed(2)}</td>
-                    <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})">Eliminar</button></td>
-                `;
-                tbody.appendChild(row);
-            });
         }
 
         function eliminarProducto(index) {
@@ -300,59 +486,32 @@
         document.getElementById('formFactura').addEventListener('submit', function(e) {
             let isValid = true;
 
-            // Campos de selección
-            const camposSelect = ['empleado_id', 'proveedor_id'];
-            camposSelect.forEach(campoId => {
-                const campo = document.getElementById(campoId);
-                const errorDiv = document.getElementById(`${campoId}-error`);
-
-                if (campo.value.trim() === '') {
-                    campo.classList.add('is-invalid');
-                    errorDiv.style.display = 'block';
-                    isValid = false;
-                } else {
-                    campo.classList.remove('is-invalid');
-                    errorDiv.style.display = 'none';
-                }
-            });
-
-            // Campo de fecha
-            const fecha = document.getElementById('fecha');
-            const fechaError = document.getElementById('fecha-error');
-            if (fecha.value === '') {
-                fecha.classList.add('is-invalid');
-                fechaError.style.display = 'block';
-                isValid = false;
-            } else {
-                fecha.classList.remove('is-invalid');
-                fechaError.style.display = 'none';
-            }
-
-            // Campo de código
-            const codigo = document.getElementById('codigo');
-            const codigoError = document.getElementById('codigo-error');
-            const codigoValue = codigo.value;
-            if (codigoValue.trim() === '' || codigoValue.startsWith(' ') || codigoValue.length > 12) {
-                codigo.classList.add('is-invalid');
-                codigoError.style.display = 'block';
-                isValid = false;
-            } else {
-                codigo.classList.remove('is-invalid');
-                codigoError.style.display = 'none';
-            }
-
-            // Campo de observaciones
-            const observaciones = document.getElementById('observaciones');
-            const observacionesError = document.getElementById('observaciones-error');
-            const observacionesValue = observaciones.value;
-            if (observacionesValue.trim() === '' || observacionesValue.startsWith(' ') || observacionesValue.length > 250) {
-                observaciones.classList.add('is-invalid');
-                observacionesError.style.display = 'block';
-                isValid = false;
-            } else {
-                observaciones.classList.remove('is-invalid');
-                observacionesError.style.display = 'none';
-            }
+            // Validación de los campos principales
+            const empleadoValid = validateField(
+                document.getElementById('empleado_id'),
+                v => v.trim() !== '',
+                'Seleccione un empleado.'
+            );
+            const proveedorValid = validateField(
+                document.getElementById('proveedor_id'),
+                v => v.trim() !== '',
+                'Seleccione un proveedor.'
+            );
+            const codigoValid = validateField(
+                document.getElementById('codigo'),
+                v => v.trim() !== '' && !v.startsWith(' ') && v.length <= 12,
+                'El código es necesario, no puede tener espacios iniciales y debe tener un máximo de 12 caracteres.'
+            );
+            const fechaValid = validateField(
+                document.getElementById('fecha'),
+                v => v.trim() !== '',
+                'Este campo es necesario.'
+            );
+            const observacionesValid = validateField(
+                document.getElementById('observaciones'),
+                v => !v.startsWith(' ') && v.length <= 250,
+                'No puede tener espacios al inicio y debe tener un máximo de 250 caracteres.'
+            );
 
             // Validación de productos
             const productosError = document.getElementById('productos-error');
@@ -363,10 +522,44 @@
                 productosError.style.display = 'none';
             }
 
+            isValid = empleadoValid && proveedorValid && codigoValid && fechaValid && observacionesValid && isValid;
+
             if (!isValid) {
                 e.preventDefault();
             }
         });
+
+        // Limpieza de campos al escribir para evitar espacios iniciales
+        document.getElementById('codigo').addEventListener('input', function() {
+            this.value = this.value.trimStart();
+        });
+
+        document.getElementById('observaciones').addEventListener('input', function() {
+            this.value = this.value.trimStart();
+        });
+
+
+        document.getElementById('limpiarFormulario').addEventListener('click', function() {
+            // Limpiar los campos del formulario
+            document.getElementById('formFactura').reset();
+
+            // Limpiar la tabla de productos
+            productosSeleccionados = [];
+            renderizarTabla();
+
+            // Limpiar los totales
+            actualizarTotales();
+
+            // Ocultar todos los mensajes de error y remover clases de validación
+            document.querySelectorAll('.is-invalid').forEach(el => {
+                el.classList.remove('is-invalid');
+            });
+            document.querySelectorAll('.alert, .text-danger').forEach(el => {
+                el.style.display = 'none';
+            });
+        });
+
     </script>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\manue\PhpstormProjects\FullRepuestos\resources\views/facturaCompra/create.blade.php ENDPATH**/ ?>

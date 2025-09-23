@@ -8,7 +8,9 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\PromocionController;
+use App\Http\Controllers\ProductoMotoController;
 
+Route::resource('productos_moto', ProductoMotoController::class);
 Route::resource('promociones', PromocionController::class);
 
 // ... (todas tus rutas existentes) ...
@@ -65,3 +67,4 @@ Route::get('/seleccionar-operacion', function () {
 
 // En routes/web.php
 Route::resource('facturas', FacturaController::class);
+

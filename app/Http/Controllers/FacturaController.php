@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FacturaVenta;
 use App\Models\DetalleFacturaVenta;
 use App\Models\Producto;
+use App\Models\ProductoMoto; // Importamos el modelo para productos de moto
 use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -33,12 +34,15 @@ class FacturaController extends Controller
         // Los clientes se ordenan por 'nombre'
         $clientes = Cliente::orderBy('nombre')->get();
 
-        $productos = Producto::select('id', 'nombre', 'marca', 'modelo', 'anio', 'categoria', 'precio_venta', 'impuesto', 'stock')->get();
+        // Obtener productos de carro y de moto en colecciones separadas
+        $productosCarro = Producto::select('id', 'nombre', 'marca', 'modelo', 'anio', 'categoria', 'precio_venta', 'impuesto', 'stock')->orderBy('nombre')->get();
+        $productosMoto = ProductoMoto::select('id', 'nombre', 'marca', 'modelo', 'anio', 'categoria')->orderBy('nombre')->get();
 
-        $marcas = $productos->pluck('marca')->unique()->sort()->values();
-        $categorias = $productos->pluck('categoria')->unique()->sort()->values();
+        $marcas = $productosCarro->pluck('marca')->merge($productosMoto->pluck('marca'))->unique()->sort()->values();
+        $categorias = $productosCarro->pluck('categoria')->merge($productosMoto->pluck('categoria'))->unique()->sort()->values();
 
-        return view('facturas.create', compact('clientes', 'productos', 'marcas', 'categorias'));
+        // Ahora la vista recibirá las colecciones de productos por separado
+        return view('facturas.create', compact('clientes', 'productosCarro', 'productosMoto', 'marcas', 'categorias'));
     }
 
     /**
@@ -61,10 +65,12 @@ class FacturaController extends Controller
             'detalles' => 'required|array|min:1',
             'detalles.*.producto_id' => [
                 'required',
-                'exists:productos,id',
+                // Validamos que el producto exista en cualquiera de las dos tablas
                 function ($attribute, $value, $fail) {
-                    if (!is_numeric($value) || trim($value) !== (string)$value) {
-                        $fail('El ' . $attribute . ' contiene caracteres inválidos o espacios.');
+                    $productoCarro = Producto::find($value);
+                    $productoMoto = ProductoMoto::find($value);
+                    if (!$productoCarro && !$productoMoto) {
+                        $fail('El producto con el ID ' . $value . ' no existe.');
                     }
                 },
             ],
@@ -75,7 +81,9 @@ class FacturaController extends Controller
                 function ($attribute, $value, $fail) use ($request) {
                     $index = explode('.', $attribute)[1];
                     $productoId = $request->input('detalles.' . $index . '.producto_id');
-                    $producto = Producto::find($productoId);
+
+                    // Buscamos el producto en ambas tablas
+                    $producto = Producto::find($productoId) ?? ProductoMoto::find($productoId);
 
                     if ($producto && $producto->stock < $value) {
                         $fail('No hay suficiente stock para el producto "' . $producto->nombre . '". Stock disponible: ' . $producto->stock . ', Cantidad solicitada: ' . $value);
@@ -115,7 +123,8 @@ class FacturaController extends Controller
                 ]);
 
                 foreach ($request->detalles as $detalleData) {
-                    $producto = Producto::find($detalleData['producto_id']);
+                    // Buscamos el producto en ambas tablas (carro y moto)
+                    $producto = Producto::find($detalleData['producto_id']) ?? ProductoMoto::find($detalleData['producto_id']);
 
                     if ($producto && $producto->stock >= $detalleData['cantidad']) {
                         $cantidad = $detalleData['cantidad'];
@@ -172,7 +181,10 @@ class FacturaController extends Controller
         // Los clientes se ordenan por 'nombre'
         $clientes = Cliente::orderBy('nombre')->get();
 
-        $productos = Producto::select('id', 'nombre', 'marca', 'modelo', 'anio', 'categoria', 'precio_venta', 'impuesto', 'stock')->get();
+        // Obtener productos de carro y de moto y combinarlos
+        $productosCarro = Producto::select('id', 'nombre', 'marca', 'modelo', 'anio', 'categoria', 'precio_venta', 'impuesto', 'stock')->orderBy('nombre')->get();
+        $productosMoto = ProductoMoto::select('id', 'nombre', 'marca', 'modelo', 'anio', 'categoria', 'precio_venta', 'impuesto', 'stock')->orderBy('nombre')->get();
+        $productos = $productosCarro->merge($productosMoto)->sortBy('nombre');
 
         $marcas = $productos->pluck('marca')->unique()->sort()->values();
         $categorias = $productos->pluck('categoria')->unique()->sort()->values();
@@ -200,10 +212,12 @@ class FacturaController extends Controller
             'detalles' => 'required|array|min:1',
             'detalles.*.producto_id' => [
                 'required',
-                'exists:productos,id',
+                // Validamos que el producto exista en cualquiera de las dos tablas
                 function ($attribute, $value, $fail) {
-                    if (!is_numeric($value) || trim($value) !== (string)$value) {
-                        $fail('El ' . $attribute . ' contiene caracteres inválidos o espacios.');
+                    $productoCarro = Producto::find($value);
+                    $productoMoto = ProductoMoto::find($value);
+                    if (!$productoCarro && !$productoMoto) {
+                        $fail('El producto con el ID ' . $value . ' no existe.');
                     }
                 },
             ],
@@ -216,7 +230,8 @@ class FacturaController extends Controller
                     $productoId = $request->input('detalles.' . $index . '.producto_id');
                     $nuevaCantidad = $value;
 
-                    $producto = Producto::find($productoId);
+                    // Buscamos el producto en ambas tablas
+                    $producto = Producto::find($productoId) ?? ProductoMoto::find($productoId);
                     if (!$producto) {
                         $fail('Producto con ID ' . $productoId . ' no encontrado.');
                         return;
@@ -248,7 +263,8 @@ class FacturaController extends Controller
         try {
             DB::transaction(function () use ($request, $factura) {
                 foreach ($factura->detalles as $detalleAnterior) {
-                    $producto = Producto::find($detalleAnterior->producto_id);
+                    // Determinamos si es un producto de carro o de moto para restaurar el stock
+                    $producto = Producto::find($detalleAnterior->producto_id) ?? ProductoMoto::find($detalleAnterior->producto_id);
                     if ($producto) {
                         $producto->increment('stock', $detalleAnterior->cantidad);
                     }
@@ -260,7 +276,8 @@ class FacturaController extends Controller
                 $ivaTotalFactura = 0;
 
                 foreach ($request->detalles as $detalleData) {
-                    $producto = Producto::find($detalleData['producto_id']);
+                    // Buscamos el producto en ambas tablas
+                    $producto = Producto::find($detalleData['producto_id']) ?? ProductoMoto::find($detalleData['producto_id']);
 
                     if ($producto && $producto->stock >= $detalleData['cantidad']) {
                         $cantidad = $detalleData['cantidad'];
@@ -311,7 +328,8 @@ class FacturaController extends Controller
         try {
             DB::transaction(function () use ($factura) {
                 foreach ($factura->detalles as $detalle) {
-                    $producto = Producto::find($detalle->producto_id);
+                    // Buscamos el producto en ambas tablas para restaurar el stock
+                    $producto = Producto::find($detalle->producto_id) ?? ProductoMoto::find($detalle->producto_id);
                     if ($producto) {
                         $producto->increment('stock', $detalle->cantidad);
                     }

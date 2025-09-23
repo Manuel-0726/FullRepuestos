@@ -32,22 +32,9 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3 col-md-6">
-                            <label for="stock" class="form-label">Cantidad en stock</label>
-                            <input type="number" name="stock" id="stock" class="form-control @error('stock') is-invalid @enderror" min="0" required value="{{ old('stock', $producto->stock ?? 0) }}">
-                            @error('stock')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
 
-                        <div class="mb-3 col-md-6">
-                            <label for="precio_venta" class="form-label">Precio de Venta</label>
-                            <input type="number" id="precio_venta" name="precio_venta" value="{{ old('precio_venta') }}"
-                                   class="form-control @error('precio_venta') is-invalid @enderror" step="0.01" min="0" required>
-                            @error('precio_venta')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
+
+
 
                         <div class="mb-3 col-md-6">
                             <label for="modelo" class="form-label">Modelo:</label>

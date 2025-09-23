@@ -3,30 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\FacturaCompra;
-use App\Models\DetalleFacturaCompra;
+use App\Models\FacturaCompraDetalle;
 use App\Models\Producto;
-use App\Models\Empleado;
+use App\Models\ProductoMoto;
 use App\Models\Proveedor;
+use App\Models\Empleado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
-use Exception;
+use Illuminate\Support\Facades\Log;
 
 class FacturaCompraController extends Controller
 {
     /**
-     * Muestra una lista de todas las facturas de compra.
+     * Muestra una lista de las facturas de compra.
      */
     public function index()
     {
-        // Carga relaciones con with
-        $facturas = FacturaCompra::with(['empleado', 'proveedor'])
-            ->orderBy('created_at', 'desc')
+        $facturas = FacturaCompra::orderBy('created_at', 'desc')
             ->paginate(10);
 
-        // Opcional: formatear la fecha antes de pasar (mejor hacerlo en la vista)
         return view('facturaCompra.index', compact('facturas'));
     }
 
@@ -38,7 +33,20 @@ class FacturaCompraController extends Controller
         $empleados = Empleado::orderBy('nombre')->get();
         $proveedores = Proveedor::orderBy('nombre_empresa')->get();
 
-        $productos = Producto::select('id', 'nombre', 'descripcion', 'marca', 'precio_compra', 'precio_venta', 'stock', 'impuesto', 'modelo', 'anio', 'descuento')->get();
+        // Se obtienen todos los productos de carro
+        $productosCarro = Producto::orderBy('nombre')->get();
+
+        // Se obtienen todos los productos de moto
+        $productosMoto = ProductoMoto::orderBy('nombre')->get();
+
+        // Combinamos ambos listados para la vista
+        $productos = $productosCarro->map(function ($item) {
+            $item->tipo = 'carro';
+            return $item;
+        })->merge($productosMoto->map(function ($item) {
+            $item->tipo = 'moto';
+            return $item;
+        }));
 
         return view('facturaCompra.create', compact('empleados', 'proveedores', 'productos'));
     }
@@ -48,165 +56,93 @@ class FacturaCompraController extends Controller
      */
     public function store(Request $request)
     {
-        // === PASO DE DEPURACIÓN CRÍTICO: REVISA LOS DATOS DEL FORMULARIO ===
-        // Esto detendrá el script y te mostrará el array de detalles del formulario.
-        // Asegúrate de que cada elemento tiene una clave 'producto_id'.
-        // dd($request->detalles);
-
+        // 1. Validar la solicitud
         $request->validate([
-            'codigo' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:factura_compras,codigo',
-                function ($attribute, $value, $fail) {
-                    if (trim($value) !== $value) {
-                        $fail('El ' . $attribute . ' no debe contener espacios al inicio o al final.');
-                    }
-                },
-            ],
+            'codigo' => 'required|string|max:255',
             'fecha' => 'required|date',
-            'empleado_id' => 'required|exists:empleados,id',
             'proveedor_id' => 'required|exists:proveedores,id',
-            'observaciones' => 'nullable|string',
-            'detalles' => 'required|array|min:1',
-            'detalles.*.producto_id' => 'required|exists:productos,id',
-            'detalles.*.cantidad' => 'required|integer|min:1',
-            'detalles.*.precio_unitario' => 'required|numeric|min:0',
-            'detalles.*.precio_venta' => 'required|numeric|min:0',
-            'detalles.*.descuento' => 'nullable|numeric|min:0',
-            'detalles.*.impuesto' => 'nullable|numeric|min:0|max:100',
+            'empleado_id' => 'required|exists:empleados,id',
+            'productos' => 'required|array',
+            'productos.*' => 'required|integer', // El ID del producto
+            'cantidades' => 'required|array',
+            'cantidades.*' => 'required|integer|min:1',
+            'precios' => 'required|array',
+            'precios.*' => 'required|numeric|min:0',
+            'tipos_producto' => 'required|array',
+            'tipos_producto.*' => 'required|in:carro,moto',
         ]);
 
-        try {
-            DB::transaction(function () use ($request) {
-                $subtotalFactura = 0;
-                $ivaTotalFactura = 0;
-                $descuentoTotalFactura = 0;
-
-                do {
-                    $codigoFactura = 'COMP-' . date('Ymd') . '-' . Str::random(6);
-                } while (FacturaCompra::where('codigo', $codigoFactura)->exists());
-
-                $facturaCompra = FacturaCompra::create([
-                    'codigo' => $codigoFactura,
-                    'fecha' => $request->fecha,
-                    'empleado_id' => $request->empleado_id,
-                    'proveedor_id' => $request->proveedor_id,
-                    'subtotal' => 0,
-                    'iva' => 0,
-                    'total' => 0,
-                    'observaciones' => $request->observaciones ? trim($request->observaciones) : null,
-                ]);
-
-                foreach ($request->detalles as $detalleData) {
-                    // Verificación robusta: saltar si el producto_id no está presente
-                    if (!isset($detalleData['producto_id'])) {
-                        continue;
-                    }
-
-                    $productoId = data_get($detalleData, 'producto_id');
-                    $producto = Producto::find($productoId);
-
-                    if (!$producto) {
-                        throw new Exception("Producto con ID {$productoId} no encontrado.");
-                    }
-
-                    $cantidad = data_get($detalleData, 'cantidad');
-                    $precioUnitarioCompra = data_get($detalleData, 'precio_unitario');
-                    $precioVenta = data_get($detalleData, 'precio_venta');
-                    $descuento = data_get($detalleData, 'descuento', 0);
-                    $impuesto = data_get($detalleData, 'impuesto', 0);
-
-                    DetalleFacturaCompra::create([
-                        'factura_compra_id' => $facturaCompra->id,
-                        'producto_id' => $producto->id,
-                        'cantidad' => $cantidad,
-                        'precio_unitario' => $precioUnitarioCompra,
-                        'descuento' => $descuento,
-                        'impuesto' => $impuesto,
-                    ]);
-
-                    $producto->stock += $cantidad;
-                    $producto->precio_compra = $precioUnitarioCompra;
-                    $producto->precio_venta = $precioVenta;
-                    $producto->impuesto = $impuesto;
-                    $producto->save();
-
-                    $subtotalDetalle = $cantidad * $precioUnitarioCompra;
-                    $ivaDetalle = (($subtotalDetalle - $descuento) * $impuesto) / 100;
-
-                    $subtotalFactura += $subtotalDetalle;
-                    $ivaTotalFactura += $ivaDetalle;
-                    $descuentoTotalFactura += $descuento;
-                }
-
-                $totalFactura = ($subtotalFactura - $descuentoTotalFactura) + $ivaTotalFactura;
-
-                $facturaCompra->update([
-                    'subtotal' => $subtotalFactura,
-                    'iva' => $ivaTotalFactura,
-                    'total' => $totalFactura,
-                    'descuento' => $descuentoTotalFactura,
-                ]);
-            });
-
-            return redirect()->route('facturas-compra.index')->with('success', 'Factura de compra creada exitosamente.');
-
-        } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'Error al crear la factura de compra: ' . $e->getMessage());
+        // 2. Asegurar que las listas tienen el mismo tamaño
+        if (count($request->productos) != count($request->cantidades) ||
+            count($request->productos) != count($request->precios) ||
+            count($request->productos) != count($request->tipos_producto)) {
+            return back()->with('error', 'Los datos del formulario no son consistentes. Intente de nuevo.')->withInput();
         }
-    }
 
-    public function show($id)
-    {
-        $factura = FacturaCompra::with(['proveedor', 'empleado', 'detalles.producto'])->findOrFail($id);
-        return view('facturaCompra.show', compact('factura'));
-    }
-    public function edit(FacturaCompra $facturas_compra)
-    {
-        $facturas_compra->load('detalles.producto');
-        $empleados = Empleado::orderBy('nombre')->get();
-        $proveedores = Proveedor::orderBy('nombre_empresa')->get();
-        $productos = Producto::all();
+        // 3. Iniciar una transacción de base de datos
+        DB::beginTransaction();
 
-        return view('facturaCompra.edit', compact('facturas_compra', 'empleados', 'proveedores', 'productos'));
-    }
-
-    public function update(Request $request, FacturaCompra $facturas_compra)
-    {
-        // Validar campos según tu necesidad
-        $request->validate([
-            'fecha' => 'required|date',
-            'proveedor_id' => 'required|exists:proveedores,id',
-            'empleado_id' => 'required|exists:empleados,id',
-            // agrega más validaciones según campos
-        ]);
-
-        $facturas_compra->update($request->only('fecha', 'proveedor_id', 'empleado_id', 'subtotal', 'iva', 'total', 'descuento', 'observaciones'));
-
-        // Aquí podrías actualizar detalles si lo tienes implementado
-
-        return redirect()->route('facturas-compra.show', $facturas_compra)->with('success', 'Factura actualizada correctamente.');
-    }
-
-    public function destroy(FacturaCompra $facturas_Compra)
-    {
         try {
-            DB::transaction(function () use ($facturas_Compra) {
-                foreach ($facturas_Compra->detalles as $detalle) {
-                    $producto = Producto::find($detalle->producto_id);
+            // 4. Calcular los totales de la factura
+            $subtotal = 0;
+            for ($i = 0; $i < count($request->productos); $i++) {
+                $subtotal += $request->cantidades[$i] * $request->precios[$i];
+            }
+            $iva = $subtotal * 0.13;
+            $total = $subtotal + $iva;
+
+            // 5. Guardar el registro principal de la Factura de Compra
+            $factura = FacturaCompra::create([
+                'codigo' => $request->codigo,
+                'fecha' => $request->fecha,
+                'subtotal' => $subtotal,
+                'iva' => $iva,
+                'total' => $total,
+                'proveedor_id' => $request->proveedor_id,
+                'empleado_id' => $request->empleado_id,
+            ]);
+
+            // 6. Guardar cada detalle de producto y actualizar el stock
+            foreach ($request->productos as $index => $productoId) {
+                $cantidad = $request->cantidades[$index];
+                $precioUnitario = $request->precios[$index];
+                $tipoProducto = $request->tipos_producto[$index];
+
+                // Guardar el detalle de la factura
+                FacturaCompraDetalle::create([
+                    'factura_compra_id' => $factura->id,
+                    'producto_id' => $productoId,
+                    'producto_tipo' => $tipoProducto,
+                    'cantidad' => $cantidad,
+                    'precio_unitario' => $precioUnitario,
+                ]);
+
+                // Actualizar el stock del producto
+                if ($tipoProducto === 'carro') {
+                    $producto = Producto::find($productoId);
                     if ($producto) {
-                        $producto->decrement('stock', $detalle->cantidad);
+                        $producto->stock += $cantidad;
+                        $producto->save();
+                    }
+                } elseif ($tipoProducto === 'moto') {
+                    $producto = ProductoMoto::find($productoId);
+                    if ($producto) {
+                        $producto->stock += $cantidad;
+                        $producto->save();
                     }
                 }
-                $facturas_Compra->delete();
-            });
+            }
 
-            return redirect()->route('facturas-compra.index')->with('success', 'Factura de compra eliminada exitosamente.');
+            // 7. Si todo es exitoso, confirmar la transacción
+            DB::commit();
 
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Error al eliminar la factura de compra: ' . $e->getMessage());
+            return redirect()->route('facturas_compra.index')->with('success', 'Factura de compra creada exitosamente.');
+
+        } catch (\Exception $e) {
+            // 8. En caso de error, deshacer todos los cambios
+            DB::rollBack();
+            Log::error('Error al guardar la factura de compra: ' . $e->getMessage());
+            return back()->with('error', 'Error al guardar la factura de compra. Por favor, inténtelo de nuevo.')->withInput();
         }
     }
 }
