@@ -16,9 +16,10 @@
         .form-control::placeholder {
             color: #ccc;
         }
+        /* CAMBIO AQUI: Borde y sombra al enfocar de color azul */
         .form-control:focus, .form-select:focus, .form-file-input:focus {
-            border-color: #f80320 !important;
-            box-shadow: 0 0 0 0.25rem rgba(248, 3, 32, 0.25) !important;
+            border-color: #0d6efd !important; /* Azul de Bootstrap */
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important; /* Sombra azul */
             background-color: #1e1e1e !important;
             color: #ffffff !important;
         }
@@ -27,6 +28,23 @@
         }
         .form-file-input {
             padding: 0.375rem 0.75rem;
+        }
+        /* CAMBIO AQUI: Borde de validación `is-invalid` de color rojo */
+        .form-control.is-invalid, .form-select.is-invalid, .form-file-input.is-invalid {
+            border-color: #dc3545 !important;
+        }
+        .form-control.is-invalid:focus, .form-select.is-invalid:focus, .form-file-input.is-invalid:focus {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+        }
+        /* Nuevo estilo para los botones, ajustados al nuevo esquema de colores */
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
         }
     </style>
 
@@ -122,7 +140,7 @@ unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="mb-3 col-md-6">
-                                <label for="tipo_producto" class="form-label text-white">Tipo de Producto:</label>
+                                <label for="tipo_producto" class="form-label text-white">Tipo de producto:</label>
                                 <select name="tipo_producto" id="tipo_producto" class="form-select bg-dark text-white <?php $__errorArgs = ['tipo_producto'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -174,7 +192,7 @@ unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="mb-3 col-md-6">
-                                <label for="imagen" class="form-label text-white">Imagen del Producto:</label>
+                                <label for="imagen" class="form-label text-white">Imagen del producto:</label>
                                 <input
                                         type="file"
                                         name="imagen"

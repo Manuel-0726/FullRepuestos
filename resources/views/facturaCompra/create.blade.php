@@ -262,13 +262,7 @@
             });
         });
 
-        /**
-         * Valida un campo de entrada y muestra un mensaje de error si es inválido.
-         * @param {HTMLElement} inputElement - El elemento input a validar.
-         * @param {function} validationFn - La función de validación que retorna true si es válido.
-         * @param {string} errorMessage - El mensaje de error a mostrar.
-         * @returns {boolean} - True si el campo es válido, false en caso contrario.
-         */
+
         function validateField(inputElement, validationFn, errorMessage) {
             const errorElement = inputElement.nextElementSibling;
             if (errorElement) {

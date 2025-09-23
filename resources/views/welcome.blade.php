@@ -4,68 +4,61 @@
 
 @section('content')
 
-    {{-- NAVBAR SUPERIOR (de esquina a esquina) --}}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-danger shadow-sm w-100">
-        <div class="container-fluid">
-            {{-- Logo --}}
-            <a class="navbar-brand d-flex align-items-center fw-bold" href="#">
-                <img src="{{ asset('logo.png/log.png') }}" alt="Logo" style="height:40px;" class="me-2">
-                Full Repuestos
-            </a>
-
-            {{-- Barra de búsqueda (centrada) --}}
-            <form class="d-flex mx-auto w-50" role="search">
-                <input class="form-control me-2" type="search" placeholder="Buscar producto..." aria-label="Buscar">
-                <button class="btn btn-dark" type="submit">Buscar</button>
-            </form>
-
-            {{-- Botón menú hamburguesa (derecha) --}}
-            <button class="btn btn-outline-light d-flex flex-column justify-content-center align-items-center ms-2"
-                    type="button" data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-controls="menuLateral"
-                    aria-label="Abrir menú"
-                    style="width:45px; height:40px;">
-                <span style="display:block;width:22px;height:3px;background:#fff;margin:2px 0;border-radius:2px;"></span>
-                <span style="display:block;width:22px;height:3px;background:#fff;margin:2px 0;border-radius:2px;"></span>
-                <span style="display:block;width:22px;height:3px;background:#fff;margin:2px 0;border-radius:2px;"></span>
-            </button>
+    {{-- CARRUSEL DE IMÁGENES --}}
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
         </div>
-    </nav>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{{ asset('images/precio.png') }}" class="d-block w-100 hero-carousel-img" alt="Promoción de repuestos">
+                <div class="carousel-caption d-none d-md-block">
+                    <h2 class="display-3 fw-bold">Grandes Ofertas</h2>
+                    <p class="lead">Encuentra los mejores precios en repuestos de alta calidad.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="{{ asset('images/todoV.png') }}" class="d-block w-100 hero-carousel-img" alt="Variedad de productos">
+                <div class="carousel-caption d-none d-md-block">
+                    <h2 class="display-3 fw-bold">Todo para tu Vehículo</h2>
+                    <p class="lead">Desde frenos y aceites hasta partes de motor, tenemos todo lo que buscas.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="{{ asset('images/rMoto.png') }}" class="d-block w-100 hero-carousel-img" alt="Repuestos de moto">
+                <div class="carousel-caption d-none d-md-block">
+                    <h2 class="display-3 fw-bold">Repuestos de Moto</h2>
+                    <p class="lead">Potencia tu moto con los mejores accesorios y repuestos del mercado.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="{{ asset('images/rMoto.png') }}" class="d-block w-100 hero-carousel-img" alt="Repuestos de moto">
+                <div class="carousel-caption d-none d-md-block">
+                    <h2 class="display-3 fw-bold">Repuestos de Moto</h2>
+                    <p class="lead">Potencia tu moto con los mejores accesorios y repuestos del mercado.</p>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
+    </div>
 
     {{-- SUBNAV DE CATEGORÍAS --}}
     <div class="bg-light shadow-sm">
-        <div class="container">
+        <div class="container-fluid">
             <ul class="nav nav-pills justify-content-center py-2">
-                <li class="nav-item"><a href="#" class="nav-link text-dark">Repuestos</a></li>
-                <li class="nav-item"><a href="#" class="nav-link text-dark">Grasas y Lubricantes</a></li>
-                <li class="nav-item"><a href="#" class="nav-link text-dark">Aditivos y Químicos</a></li>
-                <li class="nav-item"><a href="#" class="nav-link text-dark">Herram/Equipo Taller</a></li>
-                <li class="nav-item"><a href="#" class="nav-link text-dark">Varios</a></li>
-            </ul>
-        </div>
-    </div>
-
-    {{-- MENU LATERAL OFFCANVAS --}}
-    <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="menuLateral" aria-labelledby="menuLateralLabel">
-        <div class="offcanvas-header bg-danger text-white">
-            <h5 class="offcanvas-title" id="menuLateralLabel">Menú</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-        </div>
-        <div class="offcanvas-body p-0">
-            <ul class="list-unstyled mb-0">
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none bg-dark"><i class="bi bi-house-door-fill me-2"></i>Inicio</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none"><i class="bi bi-grid-fill me-2"></i>Categorías</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none"><i class="bi bi-geo-alt-fill me-2"></i>Nuestros almacenes</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none"><i class="bi bi-tags-fill me-2"></i>Promociones</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none"><i class="bi bi-journal-text me-2"></i>Nuestra historia</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none"><i class="bi bi-hand-thumbs-up-fill me-2"></i>Compromiso social</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none"><i class="bi bi-people-fill me-2"></i>Únete al equipo</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none"><i class="bi bi-newspaper me-2"></i>Noticias y eventos</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none"><i class="bi bi-chat-dots-fill me-2"></i>Blog</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none"><i class="bi bi-award-fill me-2"></i>Academia Super</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none"><i class="bi bi-book-fill me-2"></i>Publicaciones</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-white text-decoration-none"><i class="bi bi-telephone-fill me-2"></i>Contacto</a></li>
-                <li class="border-top border-secondary mt-2 pt-2"><a href="#" class="d-block py-2 ps-3 pe-4 text-danger text-decoration-none"><i class="bi bi-question-circle-fill me-2"></i>Guía de compras</a></li>
-                <li><a href="#" class="d-block py-2 ps-3 pe-4 text-danger text-decoration-none"><i class="bi bi-patch-question-fill me-2"></i>Preguntas frecuentes</a></li>
+                <li class="nav-item"><a href="{{ route('productos.index') }}" class="nav-link text-dark">Repuestos de carro</a></li>
+                <li class="nav-item"><a href="{{ route('productos_moto.index') }}" class="nav-link text-dark">Repuestos de moto</a></li>
+                <li class="nav-item"><a href="{{ route('lubricantes.index') }}" class="nav-link text-dark">Lubricantes y otros productos</a></li>
+                <li class="nav-item"><a href="{{ route('promociones.index') }}" class="nav-link text-dark">Promociones</a></li>
             </ul>
         </div>
     </div>
@@ -73,70 +66,39 @@
     {{-- CONTENIDO PRINCIPAL (TUS CARDS) --}}
     <div class="container py-5">
         <div class="text-center mb-5">
-            <h1 class="display-4 fw-bold text-dark">Full Repuestos</h1>
-            <p class="lead text-secondary">Seleccione el sistema que desea gestionar</p>
+            <h1 class="display-4 fw-bold text-white">Full Repuestos</h1>
+            <p class="lead text-white-50">Encuentra el repuesto perfecto para tu vehículo. ¡Calidad y servicio garantizados!</p>
         </div>
 
         <div class="row justify-content-center g-4">
             @php
                 $sections = [
                     [
-                        'route' => route('empleados.index'),
-                        'title' => 'Sistema de Empleados',
-                        'desc'  => 'Gestione empleados y su información.',
-                        'img'   => asset('images/empleado.jpeg'),
-                        'bg'    => 'rgba(220,20,60,0.6)'
-                    ],
-                    [
-                        'route' => route('proveedores.index'),
-                        'title' => 'Sistema de Proveedores',
-                        'desc'  => 'Administre proveedores y marcas.',
-                        'img'   => asset('images/proveedores.jpeg'),
-                        'bg'    => 'rgba(220,20,60,0.6)'
-                    ],
-                    [
-                         'route' => route('promociones.index'),
-                        'title' => 'Sistema de promociones',
-                        'desc'  => 'Administre las promociones.',
-                        'img'   => asset(''),
-                        'bg'    => 'rgba(220,20,60,0.6)'
-                    ],
-                    [
-
-                         'route' => route('cliente.index'),
-                        'title' => 'Sistema de clientes',
-                        'desc'  => 'Administre los clientes.',
-                        'img'   => asset(''),
-                        'bg'    => 'rgba(220,20,60,0.6)'
-                    ],
-                    [
-
-                         'route' => route('facturas.index'),
-                        'title' => 'Sistema de factura de ventas',
-                        'desc'  => 'Administre las facturas de ventas.',
-                        'img'   => asset(''),
-                        'bg'    => 'rgba(220,20,60,0.6)'
-                    ],
-                    [
-
-                         'route' => route('facturas-compra.index'),
-                        'title' => 'Sistema de facturas de compra',
-                        'desc'  => 'Administre las facturas de compras.',
-                        'img'   => asset(''),
-                        'bg'    => 'rgba(220,20,60,0.6)'
-                    ],
-                    [
                         'route' => route('productos.index'),
                         'title' => 'Repuestos de Carro',
-                        'desc'  => 'Gestione inventario de carro.',
+                        'desc'  => 'Explora nuestro extenso catálogo de repuestos para vehículos. Desde frenos hasta motores, tenemos lo que necesitas.',
                         'img'   => asset('images/repuestosC.jpg'),
                         'bg'    => 'rgba(220,20,60,0.6)'
                     ],
                     [
                         'route' => route('productos_moto.index'),
                         'title' => 'Repuestos de Moto',
-                        'desc'  => 'Gestione inventario de moto.',
+                        'desc'  => 'Encuentra las piezas de alta calidad para mantener tu moto en perfectas condiciones. ¡Potencia y seguridad en cada viaje!',
                         'img'   => asset('images/moto.jpg'),
+                        'bg'    => 'rgba(220,20,60,0.6)'
+                    ],
+                    [
+                        'route' => route('lubricantes.index'),
+                        'title' => 'Lubricantes y Fluidos',
+                        'desc'  => 'Protege tu motor con nuestra gama de lubricantes y fluidos de las mejores marcas. Mantenimiento de primer nivel.',
+                        'img'   => asset('images/lubricante.png'),
+                        'bg'    => 'rgba(220,20,60,0.6)'
+                    ],
+                    [
+                        'route' => route('promociones.index'),
+                        'title' => 'Promociones del Mes',
+                        'desc'  => 'No te pierdas nuestras ofertas especiales en productos seleccionados. ¡Aprovecha los descuentos para ahorrar en tus compras!',
+                        'img'   => asset('images/promocion.png'),
                         'bg'    => 'rgba(220,20,60,0.6)'
                     ],
                 ];
@@ -155,7 +117,7 @@
                                 </div>
                             </div>
                             <div class="card-body text-center p-4">
-                                <p class="card-text text-muted mb-4">{{ $section['desc'] }}</p>
+                                <p class="card-text text-white mb-4">{{ $section['desc'] }}</p>
                                 <button class="btn btn-danger btn-lg rounded-pill w-100">Acceder</button>
                             </div>
                         </div>
@@ -165,41 +127,81 @@
         </div>
     </div>
 
-    {{-- ESTILOS --}}
-    <style>
-        /* Mantener header de esquina a esquina */
-        nav.navbar {
-            padding-left: 0;
-            padding-right: 0;
-        }
+    {{-- PIE DE PÁGINA (FOOTER) --}}
+    <footer class="bg-dark text-white pt-5 pb-4 mt-auto w-100">
+        <div class="container-fluid text-center text-md-start">
+            <div class="row text-center text-md-start">
+                <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                    <h5 class="text-uppercase mb-4 fw-bold text-danger">Full Repuestos</h5>
+                    <p>Somos una empresa dedicada a la venta y distribución de repuestos de alta calidad para vehículos y motocicletas. Nuestro compromiso es ofrecerle los mejores productos y un servicio excepcional.</p>
+                </div>
 
-        .offcanvas-header {
-            border-bottom: 1px solid #dc3545; /* línea separadora */
-        }
-        .offcanvas-body .text-white:hover {
-            background-color: #333;
-        }
-        .section-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .section-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 0 20px rgba(0,0,0,0.3);
-        }
-        .overlay {
-            transition: background 0.3s ease;
-        }
-        .section-card:hover .overlay {
-            background: rgba(220,20,60,0.5);
-        }
+                <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                    <h5 class="text-uppercase mb-4 fw-bold text-danger">Productos</h5>
+                    <p><a href="{{ route('productos.index') }}" class="text-white" style="text-decoration: none;">Repuestos de Carro</a></p>
+                    <p><a href="{{ route('productos_moto.index') }}" class="text-white" style="text-decoration: none;">Repuestos de Moto</a></p>
+                    <p><a href="{{ route('lubricantes.index') }}" class="text-white" style="text-decoration: none;">Lubricantes</a></p>
+                    <p><a href="{{ route('promociones.index') }}" class="text-white" style="text-decoration: none;">Promociones</a></p>
+                </div>
 
-        /* Ajuste para que el offcanvas no cubra TODO en pantallas grandes si quieres
-           (coméntalo si prefieres que cubra completamente) */
-        @media (min-width: 992px) {
-            .offcanvas.show {
-                width: 320px;
-            }
-        }
-    </style>
+                <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+                    <h5 class="text-uppercase mb-4 fw-bold text-danger">Enlaces</h5>
+                    <p><a href="{{ route('about') }}" class="text-white" style="text-decoration: none;">Nuestra Historia</a></p>
+                    <p><a href="#" class="text-white" style="text-decoration: none;">Guía de compras</a></p>
+                    <p><a href="#" class="text-white" style="text-decoration: none;">Preguntas Frecuentes</a></p>
+                </div>
 
+                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+                    <h5 class="text-uppercase mb-4 fw-bold text-danger">Contacto</h5>
+                    <p><i class="fas fa-home me-3"></i> Barrio Abajo, Danli, El Paraíso, Honduras</p>
+                    <p><i class="fas fa-envelope me-3"></i> fullrepuestos@gmail.com</p>
+                    <p><i class="fas fa-phone me-3"></i> +504 9558-7343</p>
+                </div>
+            </div>
+
+            <hr class="mb-4">
+
+            <div class="row align-items-center">
+                <div class="col-md-7 col-lg-8">
+                    <p class="text-center text-md-start">© 2025 Full Repuestos. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-5 col-lg-4">
+                    <div class="text-center text-md-end">
+                        <ul class="list-unstyled list-inline">
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-white" style="font-size: 23px;"><i class="fab fa-facebook-f"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-white" style="font-size: 23px;"><i class="fab fa-twitter"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-white" style="font-size: 23px;"><i class="fab fa-google-plus-g"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-white" style="font-size: 23px;"><i class="fab fa-linkedin-in"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-white" style="font-size: 23px;"><i class="fab fa-youtube"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 @endsection
+
+<style>
+    /* Estilos para el carrusel de héroe */
+    .hero-carousel-img {
+        object-fit: cover;
+        height: 450px; /* Ajusta la altura a tu preferencia */
+        filter: brightness(0.7); /* Oscurece las imágenes para que el texto sea más legible */
+    }
+
+    .carousel-caption {
+        background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente para el texto */
+        padding: 20px;
+        border-radius: 10px;
+    }
+</style>

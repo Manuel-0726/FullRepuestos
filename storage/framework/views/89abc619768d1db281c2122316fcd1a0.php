@@ -205,8 +205,7 @@
                                 <p class="mb-2 detail-value text-wrap">
                                     <strong class="detail-item">Descripción:</strong>
                                 </p>
-                                <div class="description-content">
-                                    <?php echo e(strip_tags(trim($lubricante->descripcion)) ?? 'No hay descripción detallada.'); ?>
+                                <div class="description-content"><?php echo strip_tags(trim($lubricante->descripcion)) ?? 'No hay descripción detallada.'; ?>
 
                                 </div>
                             </div>
@@ -219,4 +218,5 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\FullRepuestos\resources\views/lubricantes/show.blade.php ENDPATH**/ ?>

@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Lista de Productos')
+@section('title', 'Lista de productos de carro')
 
 @section('content')
     <div class="container py-5">
         <div class="table-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0">Lista de productos</h2>
+                <h2 class="mb-0">Lista de productos de carro</h2>
                 <span class="text-white">Total: <strong>{{ $productos->total() }}</strong></span>
             </div>
 

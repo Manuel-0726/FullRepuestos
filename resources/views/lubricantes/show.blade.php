@@ -199,8 +199,7 @@
                                 <p class="mb-2 detail-value text-wrap">
                                     <strong class="detail-item">Descripción:</strong>
                                 </p>
-                                <div class="description-content">
-                                    {{ strip_tags(trim($lubricante->descripcion)) ?? 'No hay descripción detallada.' }}
+                                <div class="description-content">{!! strip_tags(trim($lubricante->descripcion)) ?? 'No hay descripción detallada.' !!}
                                 </div>
                             </div>
                         </div>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LubricanteController;
+use App\Http\Controllers\ProductoMotoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\EmpleadoController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\PromocionController;
+use App\Http\Controllers\SearchController; // Importa el nuevo controlador
 
 // ----------- RUTAS PRINCIPALES Y MENÚ -----------
 
@@ -59,6 +61,9 @@ Route::get('/productos/menu', function () {
 })->name('productos.menu');
 Route::resource('productos', ProductoController::class);
 
+// Actualiza la ruta para usar el nuevo controlador de búsqueda
+Route::get('/buscar', [SearchController::class, 'results'])->name('search.results');
+
 // Facturas de Venta
 Route::get('/facturas/menu', function () {
     return view('facturas.menu');
@@ -68,3 +73,6 @@ Route::resource('facturas', FacturaController::class);
 
 // Lubricantes
 Route::resource('lubricantes', LubricanteController::class);
+
+Route::resource('productos_moto', ProductoMotoController::class);
+Route::resource('promociones', PromocionController::class);

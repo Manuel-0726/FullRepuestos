@@ -151,4 +151,16 @@ class ProductoController extends Controller
         $producto->delete();
         return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
     }
+
+    // Nuevo método para la búsqueda
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $productos = Producto::where('nombre', 'LIKE', "%{$query}%")
+            ->orWhere('descripcion', 'LIKE', "%{$query}%")
+            ->get();
+
+        return view('search_results', compact('productos', 'query'));
+    }
 }

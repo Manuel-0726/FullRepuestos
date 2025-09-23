@@ -77,6 +77,10 @@ class EmpleadoController extends Controller
                 'unique:empleados,identidad',
                 function ($attribute, $value, $fail) {
                     $partes = explode('-', $value);
+                    // CAMBIO APLICADO: Asegurarse de que el formato de la identidad es correcto
+                    if (count($partes) !== 3) {
+                        return $fail('El formato del número de identidad es inválido: debe ser ####-####-#####.');
+                    }
                     [$lugar, $anio, $correlativo] = $partes;
 
                     $departamento = (int)substr($lugar, 0, 2);
@@ -201,6 +205,10 @@ class EmpleadoController extends Controller
                 Rule::unique('empleados')->ignore($empleado->id),
                 function ($attribute, $value, $fail) {
                     $partes = explode('-', $value);
+                    // CAMBIO APLICADO: Asegurarse de que el formato de la identidad es correcto
+                    if (count($partes) !== 3) {
+                        return $fail('El formato del número de identidad es inválido: debe ser ####-####-#####.');
+                    }
                     [$lugar, $anio, $correlativo] = $partes;
 
                     $departamento = (int)substr($lugar, 0, 2);

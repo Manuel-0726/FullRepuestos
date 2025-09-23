@@ -126,11 +126,12 @@
                             </div>
                         </div>
 
-                        <div class="d-flex gap-3 mt-3">
-                            <button type="submit" class="btn btn-danger">Registrar</button>
-                            <a href="{{ route('productos_moto.index') }}" class="btn btn-secondary">Volver</a>
-                            <a href="{{ route('welcome') }}" class="btn btn-primary">Inicio</a>
-                        </div>
+
+                        <button type="submit" class="btn btn-danger">Guardar</button>
+                        <button type="button" class="btn btn-danger" id="limpiarFormulario">Limpiar</button>
+                        <a href="{{ route('productos_moto.index') }}" class="btn btn-danger">Cancelar</a>
+
+
                     </form>
                 </div>
             </div>
