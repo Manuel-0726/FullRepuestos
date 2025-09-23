@@ -31,8 +31,7 @@
                     <p class="mb-1"><strong>Año:</strong> {{ $producto->anio }}</p>
                     <p class="mb-1"><strong>Categoría:</strong> {{ $producto->categoria }}</p>
                     <p class="mb-1"><strong>Descripción:</strong> {{ $producto->descripcion }}</p> {{-- Descripción --}}
-                    <p class="mb-1"><strong>Precio:</strong> L. {{ number_format($producto->precio, 2) }}</p> {{-- Precio --}}
-                    <p class="mb-1"><strong>Stock:</strong> {{ $producto->stock }} unidades</p> {{-- Stock --}}
+
                 </div>
 
                 <hr class="border-secondary mb-4">

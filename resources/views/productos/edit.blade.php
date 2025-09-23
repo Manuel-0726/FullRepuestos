@@ -1,12 +1,11 @@
 @extends('layouts.app')
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
     <title>Editar producto</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-
 </head>
 <body>
 <div class="container py-5">
@@ -46,18 +45,16 @@
                         <div class="mb-3 col-md-6">
                             <label for="nombre" class="form-label">Nombre:</label>
                             <input
-                                type="text"
-                                class="form-control @error('nombre') is-invalid @enderror"
-                                id="nombre"
-                                name="nombre"
-                                value="{{ old('nombre', $producto->nombre) }}"
-                                required
-                                maxlength="50"
-                                autocomplete="off"
+                                    type="text"
+                                    class="form-control @error('nombre') is-invalid @enderror"
+                                    id="nombre"
+                                    name="nombre"
+                                    value="{{ old('nombre', $producto->nombre) }}"
+                                    required
+                                    maxlength="60"
+                                    autocomplete="off"
+                                    onkeydown="return evitarEspaciosInicio(this, event)"
                             />
-                            <div class="invalid-feedback" id="nombre-feedback">
-                                El nombre solo puede contener letras y espacios.
-                            </div>
                             @error('nombre')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -67,18 +64,17 @@
                         <div class="mb-3 col-md-6">
                             <label for="modelo" class="form-label">Modelo:</label>
                             <input
-                                type="text"
-                                class="form-control @error('modelo') is-invalid @enderror"
-                                id="modelo"
-                                name="modelo"
-                                value="{{ old('modelo', $producto->modelo) }}"
-                                required
-                                maxlength="50"
-                                autocomplete="off"
+                                    type="text"
+                                    class="form-control @error('modelo') is-invalid @enderror"
+                                    id="modelo"
+                                    name="modelo"
+                                    value="{{ old('modelo', $producto->modelo) }}"
+                                    required
+                                    maxlength="60"
+                                    autocomplete="off"
+                                    pattern="^[A-Za-z0-9\-]+$"
+                                    onkeydown="return evitarEspaciosInicio(this, event)"
                             />
-                            <div class="invalid-feedback" id="modelo-feedback">
-                                El modelo puede contener letras, números, espacios y guiones.
-                            </div>
                             @error('modelo')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -96,7 +92,6 @@
                                     <option value="{{ $marca }}" {{ old('marca', $producto->marca) == $marca ? 'selected' : '' }}>{{ $marca }}</option>
                                 @endforeach
                             </select>
-                            <div class="invalid-feedback" id="marca-feedback">Por favor, seleccione una marca.</div>
                             @error('marca')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -106,20 +101,16 @@
                         <div class="mb-3 col-md-6">
                             <label for="anio" class="form-label">Año:</label>
                             <input
-                                type="number"
-                                class="form-control @error('anio') is-invalid @enderror"
-                                id="anio"
-                                name="anio"
-                                value="{{ old('anio', $producto->anio) }}"
-                                required
-                                min="1990"
-                                max="{{ date('Y') }}"
-                                maxlength="4"
-                                autocomplete="off"
+                                    type="number"
+                                    class="form-control @error('anio') is-invalid @enderror"
+                                    id="anio"
+                                    name="anio"
+                                    value="{{ old('anio', $producto->anio) }}"
+                                    required
+                                    min="1990"
+                                    max="{{ date('Y') }}"
+                                    oninput="validarAnio(this)"
                             />
-                            <div class="invalid-feedback" id="anio-feedback">
-                                El año debe ser igual o mayor a 1990, no mayor al año actual.
-                            </div>
                             @error('anio')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -139,7 +130,6 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <div class="invalid-feedback" id="categoria-feedback">Por favor, seleccione una categoría.</div>
                             @error('categoria')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -149,17 +139,15 @@
                         <div class="mb-3 col-md-6">
                             <label for="descripcion" class="form-label">Descripción:</label>
                             <textarea
-                                class="form-control @error('descripcion') is-invalid @enderror"
-                                id="descripcion"
-                                name="descripcion"
-                                required
-                                maxlength="100"
-                                rows="3"
-                                autocomplete="off"
+                                    class="form-control @error('descripcion') is-invalid @enderror"
+                                    id="descripcion"
+                                    name="descripcion"
+                                    required
+                                    maxlength="250"
+                                    rows="3"
+                                    autocomplete="off"
+                                    onkeydown="return evitarEspaciosInicio(this, event)"
                             >{{ old('descripcion', $producto->descripcion) }}</textarea>
-                            <div class="invalid-feedback" id="descripcion-feedback">
-                                La descripción no puede empezar con espacio o número.
-                            </div>
                             @error('descripcion')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -177,128 +165,25 @@
     </div>
 </div>
 
+<!-- JS validaciones -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('formProducto');
+    // Evitar que el primer caracter sea un espacio
+    function evitarEspaciosInicio(input, event) {
+        if (event.key === " " && input.selectionStart === 0) {
+            event.preventDefault();
+            return false;
+        }
+        return true;
+    }
 
-        form.addEventListener('submit', function(event) {
-            let formIsValid = true;
-
-            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-            document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
-
-            const nombreInput = document.getElementById('nombre');
-            const nombre = nombreInput.value.trim();
-            const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ][a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]{0,49}$/;
-            if (nombre === '') {
-                nombreInput.classList.add('is-invalid');
-                nombreInput.nextElementSibling.style.display = 'block';
-                formIsValid = false;
-            } else if (!regexNombre.test(nombre)) {
-                nombreInput.classList.add('is-invalid');
-                nombreInput.nextElementSibling.style.display = 'block';
-                formIsValid = false;
-            }
-
-            const modeloInput = document.getElementById('modelo');
-            const modelo = modeloInput.value.trim();
-            const regexModelo = /^[a-zA-Z][a-zA-Z0-9\s\-]{0,49}$/;
-            if (modelo === '') {
-                modeloInput.classList.add('is-invalid');
-                document.getElementById('modelo-feedback').style.display = 'block';
-                formIsValid = false;
-            } else if (!regexModelo.test(modelo)) {
-                modeloInput.classList.add('is-invalid');
-                document.getElementById('modelo-feedback').style.display = 'block';
-                formIsValid = false;
-            }
-
-            const marcaInput = document.getElementById('marca');
-            if (!marcaInput.value) {
-                marcaInput.classList.add('is-invalid');
-                document.getElementById('marca-feedback').style.display = 'block';
-                formIsValid = false;
-            }
-
-            const anioInput = document.getElementById('anio');
-            const anio = anioInput.value.trim();
-            const anioNum = parseInt(anio, 10);
-            const anioActual = new Date().getFullYear();
-            const regexAnio = /^[1-9]\d{3}$/;
-            if (anio === '') {
-                anioInput.classList.add('is-invalid');
-                document.getElementById('anio-feedback').style.display = 'block';
-                formIsValid = false;
-            } else if (!regexAnio.test(anio) || isNaN(anioNum) || anioNum < 1990 || anioNum > anioActual) {
-                anioInput.classList.add('is-invalid');
-                document.getElementById('anio-feedback').style.display = 'block';
-                formIsValid = false;
-            }
-
-            const categoriaInput = document.getElementById('categoria');
-            if (!categoriaInput.value) {
-                categoriaInput.classList.add('is-invalid');
-                document.getElementById('categoria-feedback').style.display = 'block';
-                formIsValid = false;
-            }
-
-            const descripcionInput = document.getElementById('descripcion');
-            const descripcion = descripcionInput.value.trim();
-            const regexDescripcion = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ][a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]{0,99}$/;
-            if (descripcion === '') {
-                descripcionInput.classList.add('is-invalid');
-                document.getElementById('descripcion-feedback').style.display = 'block';
-                formIsValid = false;
-            } else if (!regexDescripcion.test(descripcion)) {
-                descripcionInput.classList.add('is-invalid');
-                document.getElementById('descripcion-feedback').style.display = 'block';
-                formIsValid = false;
-            }
-
-            if (!formIsValid) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        });
-
-        ['nombre', 'descripcion', 'marca', 'modelo', 'anio', 'categoria'].forEach(id => {
-            const el = document.getElementById(id);
-            el.addEventListener('input', () => {
-                if(el.classList.contains('is-invalid')) {
-                    el.classList.remove('is-invalid');
-                    const feedback = document.getElementById(id + '-feedback');
-                    if(feedback) feedback.style.display = 'none';
-                }
-            });
-            if(el.tagName === 'SELECT') {
-                el.addEventListener('change', () => {
-                    if(el.classList.contains('is-invalid')) {
-                        el.classList.remove('is-invalid');
-                        const feedback = document.getElementById(el.id + '-feedback');
-                        if(feedback) feedback.style.display = 'none';
-                    }
-                });
-            }
-        });
-
-        document.getElementById('anio').addEventListener('input', e => {
-            let val = e.target.value.replace(/\D/g, '');
-            if(val.length > 4) val = val.slice(0, 4);
-            while(val.startsWith('0')) val = val.slice(1);
-            e.target.value = val;
-        });
-
-        ['nombre', 'descripcion', 'modelo'].forEach(id => {
-            const el = document.getElementById(id);
-            el.addEventListener('input', () => {
-                let val = el.value;
-                if(val.length > 0 && (/^[\s0-9]/.test(val.charAt(0)))) {
-                    el.value = val.substring(1);
-                }
-            });
-        });
-    });
+    // Validar que el año solo tenga 4 dígitos válidos
+    function validarAnio(input) {
+        let valor = input.value.replace(/\D/g, ""); // elimina letras
+        if (valor.length > 4) {
+            valor = valor.slice(0, 4); // solo deja 4 dígitos
+        }
+        input.value = valor;
+    }
 </script>
-
 </body>
 </html>

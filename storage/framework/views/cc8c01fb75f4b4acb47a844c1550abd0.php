@@ -1,25 +1,25 @@
-@extends('layouts.app')
 
-@section('title', 'Full Repuestos')
 
-@section('content')
+<?php $__env->startSection('title', 'Full Repuestos'); ?>
 
-    {{-- NAVBAR SUPERIOR (de esquina a esquina) --}}
+<?php $__env->startSection('content'); ?>
+
+    
     <nav class="navbar navbar-expand-lg navbar-dark bg-danger shadow-sm w-100">
         <div class="container-fluid">
-            {{-- Logo --}}
+            
             <a class="navbar-brand d-flex align-items-center fw-bold" href="#">
-                <img src="{{ asset('logo.png/log.png') }}" alt="Logo" style="height:40px;" class="me-2">
+                <img src="<?php echo e(asset('logo.png/log.png')); ?>" alt="Logo" style="height:40px;" class="me-2">
                 Full Repuestos
             </a>
 
-            {{-- Barra de búsqueda (centrada) --}}
+            
             <form class="d-flex mx-auto w-50" role="search">
                 <input class="form-control me-2" type="search" placeholder="Buscar producto..." aria-label="Buscar">
                 <button class="btn btn-dark" type="submit">Buscar</button>
             </form>
 
-            {{-- Botón menú hamburguesa (derecha) --}}
+            
             <button class="btn btn-outline-light d-flex flex-column justify-content-center align-items-center ms-2"
                     type="button" data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-controls="menuLateral"
                     aria-label="Abrir menú"
@@ -31,7 +31,7 @@
         </div>
     </nav>
 
-    {{-- SUBNAV DE CATEGORÍAS --}}
+    
     <div class="bg-light shadow-sm">
         <div class="container">
             <ul class="nav nav-pills justify-content-center py-2">
@@ -44,7 +44,7 @@
         </div>
     </div>
 
-    {{-- MENU LATERAL OFFCANVAS --}}
+    
     <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="menuLateral" aria-labelledby="menuLateralLabel">
         <div class="offcanvas-header bg-danger text-white">
             <h5 class="offcanvas-title" id="menuLateralLabel">Menú</h5>
@@ -70,7 +70,7 @@
         </div>
     </div>
 
-    {{-- CONTENIDO PRINCIPAL (TUS CARDS) --}}
+    
     <div class="container py-5">
         <div class="text-center mb-5">
             <h1 class="display-4 fw-bold text-dark">Full Repuestos</h1>
@@ -78,7 +78,7 @@
         </div>
 
         <div class="row justify-content-center g-4">
-            @php
+            <?php
                 $sections = [
                     [
                         'route' => route('empleados.index'),
@@ -140,32 +140,32 @@
                         'bg'    => 'rgba(220,20,60,0.6)'
                     ],
                 ];
-            @endphp
+            ?>
 
-            @foreach ($sections as $section)
+            <?php $__currentLoopData = $sections; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $section): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="col-md-4">
-                    <a href="{{ $section['route'] }}" class="text-decoration-none">
+                    <a href="<?php echo e($section['route']); ?>" class="text-decoration-none">
                         <div class="card section-card h-100 shadow-lg rounded-4 overflow-hidden">
                             <div class="card-img-top position-relative"
-                                 style="height: 200px; background: url('{{ $section['img'] }}') center center / cover no-repeat;">
+                                 style="height: 200px; background: url('<?php echo e($section['img']); ?>') center center / cover no-repeat;">
                                 <div class="overlay position-absolute top-0 start-0 w-100 h-100"
-                                     style="background: {{ $section['bg'] }};"></div>
+                                     style="background: <?php echo e($section['bg']); ?>;"></div>
                                 <div class="position-absolute bottom-0 start-0 p-3 text-white">
-                                    <h3 class="fw-semibold">{{ $section['title'] }}</h3>
+                                    <h3 class="fw-semibold"><?php echo e($section['title']); ?></h3>
                                 </div>
                             </div>
                             <div class="card-body text-center p-4">
-                                <p class="card-text text-muted mb-4">{{ $section['desc'] }}</p>
+                                <p class="card-text text-muted mb-4"><?php echo e($section['desc']); ?></p>
                                 <button class="btn btn-danger btn-lg rounded-pill w-100">Acceder</button>
                             </div>
                         </div>
                     </a>
                 </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
 
-    {{-- ESTILOS --}}
+    
     <style>
         /* Mantener header de esquina a esquina */
         nav.navbar {
@@ -202,4 +202,6 @@
         }
     </style>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\manue\PhpstormProjects\FullRepuestos\resources\views/welcome.blade.php ENDPATH**/ ?>

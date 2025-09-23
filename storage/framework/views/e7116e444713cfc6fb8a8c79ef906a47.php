@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>@yield('title', 'Sistema')</title>
+    <title><?php echo $__env->yieldContent('title', 'Sistema'); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,7 +16,7 @@
     <style>
         /* --- Estilos Globales para el Body y el Fondo --- */
         body {
-            background-image: url('{{ asset('logo.png/fondo.png') }}'); /* ¡Asegúrate de que esta ruta sea correcta! */
+            background-image: url('<?php echo e(asset('logo.png/fondo.png')); ?>'); /* ¡Asegúrate de que esta ruta sea correcta! */
             background-size: cover; /* La imagen cubre todo el fondo */
             background-position: center center; /* Centra la imagen */
             background-repeat: no-repeat; /* Evita que la imagen se repita */
@@ -207,7 +207,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/') }}">Inicio</a>
+                    <a class="nav-link" href="<?php echo e(url('/')); ?>">Inicio</a>
                 </li>
                 <!-- Aquí puedes añadir más enlaces de navegación si los necesitas en todas las páginas -->
             </ul>
@@ -216,9 +216,10 @@
 </nav>
 
 <div class="container-fluid content-wrapper">
-    @yield('content')
+    <?php echo $__env->yieldContent('content'); ?>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<?php /**PATH C:\Users\manue\PhpstormProjects\FullRepuestos\resources\views/layouts/app.blade.php ENDPATH**/ ?>
