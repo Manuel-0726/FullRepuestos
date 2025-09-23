@@ -128,7 +128,6 @@
 
                     <button type="submit" class="btn btn-danger">Guardar</button>
                     <button type="button" class="btn btn-danger" id="limpiarFormulario">Limpiar</button>
-                    {{-- Botón Cancelar, corregido a 'cliente.menu' --}}
                     <a href="{{ route('cliente.index') }}" class="btn btn-danger">Cancelar</a>
                 </form>
             </div>
@@ -431,9 +430,9 @@
                         }
                     }
                 }
-            }); // Cierra input listener
-        }); // Cierra forEach input
-    }); // Cierre del DOMContentLoaded
+            });
+        });
+    });
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
 </head>
 <body>
 <div class="container py-5">
@@ -31,16 +30,22 @@
             </div>
         @endif
 
-        {{-- Enlace para crear nuevo cliente, corregido a 'cliente.create' --}}
 
         <div class="d-flex mb-3 gap-2">
             <a href="{{ route('cliente.create') }}" class="btn btn-danger">+ Nuevo cliente</a>
-
             <a href="{{ route('welcome') }}" class="btn btn-danger">Inicio</a>
         </div>
-        <form action="{{ route('cliente.index') }}" method="GET" class="mb-3" id="searchForm"> {{-- Formulario de búsqueda corregido a 'cliente.index' --}}
+
+        <form action="{{ route('cliente.index') }}" method="GET" class="mb-3" id="searchForm">
             <div class="input-group">
-                <input type="text" name="search" id="searchInput" class="form-control" placeholder="Buscar cliente por nombre, apellido o identidad" value="{{ request('search') }}" list="clientSuggestions">
+                <input type="text" name="search" id="searchInput" class="form-control"
+                       placeholder="Buscar cliente por nombre, apellido o identidad"
+                       value="{{ request('search') }}"
+                       list="clientSuggestions"
+                       maxlength="30"
+                       pattern="[a-zA-Z0-9\s]*"
+                       title="Solo se permiten letras, números y espacios (máximo 30 caracteres). Los espacios iniciales se bloquean."
+                >
                 <datalist id="clientSuggestions"></datalist>
                 <button type="submit" class="btn btn-danger">Buscar</button>
                 <button type="button" class="btn btn-secondary" id="clearSearchBtn" style="{{ request('search') ? 'display: block;' : 'display: none;' }}">Limpiar</button>
@@ -68,7 +73,6 @@
                         <td>{{ $cliente->identidad }}</td>
                         <td>{{ $cliente->telefono }}</td>
                         <td>
-                            {{-- Enlaces de acciones, corregidos a 'cliente.show', 'cliente.edit', 'cliente.destroy' --}}
                             <a href="{{ route('cliente.show', $cliente->id) }}" class="btn btn-info btn-sm me-1">Ver más</a>
                             <a href="{{ route('cliente.edit', $cliente->id) }}" class="btn btn-warning btn-sm">Editar</a>
                             <form action="{{ route('cliente.destroy', $cliente->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este cliente?');" style="display:inline-block;">
@@ -91,7 +95,6 @@
             {{ $clientes->withQueryString()->links('vendor.pagination.bootstrap-5') }}
         </div>
 
-
     </div>
 </div>
 
@@ -102,15 +105,54 @@
         const clientSuggestions = document.getElementById('clientSuggestions');
         const clearSearchBtn = document.getElementById('clearSearchBtn');
         const searchForm = document.getElementById('searchForm');
-
         let debounceTimeout;
+
+        if (searchInput.value.trim() !== '') {
+            searchInput.focus();
+        }
 
         clearSearchBtn.addEventListener('click', function() {
             searchInput.value = '';
+
+            if (window.history.pushState) {
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.delete('search');
+                window.history.pushState({ path: newUrl.href }, '', newUrl.href);
+            }
+
             searchForm.submit();
         });
 
-        searchInput.addEventListener('input', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (urlParams.has('search') && urlParams.get('search') !== '') {
+            if (window.history.pushState) {
+                urlParams.delete('search');
+                const newUrl = window.location.pathname + urlParams.toString();
+                window.history.replaceState({}, '', newUrl);
+            }
+        }
+
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted && !new URLSearchParams(window.location.search).has('search')) {
+                searchInput.value = '';
+                clearSearchBtn.style.display = 'none';
+            }
+        });
+
+        searchInput.addEventListener('input', function(e) {
+            let value = this.value;
+
+            if (value.startsWith(' ')) {
+                this.value = value.trimStart();
+                value = this.value;
+            }
+
+            const cleanValue = value.replace(/[^a-zA-Z0-9\s]/g, '');
+
+            if (value !== cleanValue) {
+                this.value = cleanValue;
+            }
             if (this.value.trim() !== '') {
                 clearSearchBtn.style.display = 'block';
             } else {
@@ -118,34 +160,30 @@
             }
 
             clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(() => {
-                const query = this.value.trim();
-                if (query.length > 1) {
-                    // Ruta de autocompletado para clientes, corregida a 'cliente.autocomplete'
-                    fetch(`/cliente/autocomplete?query=${encodeURIComponent(query)}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                return response.text().then(text => {
-                                    throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
-                                });
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            clientSuggestions.innerHTML = '';
-                            if (data.length > 0) {
-                                data.forEach(item => {
-                                    const option = document.createElement('option');
-                                    option.value = item;
-                                    clientSuggestions.appendChild(option);
-                                });
-                            }
-                        })
-                        .catch(error => console.error('Error al obtener datos de autocompletado de clientes:', error));
-                } else {
-                    clientSuggestions.innerHTML = '';
-                }
-            }, 300);
+            if (this.value === cleanValue) {
+                debounceTimeout = setTimeout(() => {
+                    const query = this.value.trim();
+                    if (query.length > 1) {
+                        fetch(`/cliente/autocomplete?query=${encodeURIComponent(query)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                clientSuggestions.innerHTML = '';
+                                if (data.length > 0) {
+                                    data.forEach(item => {
+                                        const option = document.createElement('option');
+                                        option.value = item;
+                                        clientSuggestions.appendChild(option);
+                                    });
+                                }
+                            })
+                            .catch(error => console.error('Error al obtener datos de autocompletado de clientes:', error));
+                    } else {
+                        clientSuggestions.innerHTML = '';
+                    }
+                }, 300);
+            } else {
+                clientSuggestions.innerHTML = '';
+            }
         });
 
         if (searchInput.value.trim() !== '') {

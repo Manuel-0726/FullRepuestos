@@ -15,20 +15,35 @@ class ClienteController extends Controller
     {
         $query = Cliente::query();
 
-        // Lógica de búsqueda
-        if ($request->has('search') && $request->input('search') != '') {
-            $search = $request->input('search');
-            $query->where(function($q) use ($search) {
-                $q->where('nombre', 'like', '%' . $search . '%')
-                    ->orWhere('apellido', 'like', '%' . $search . '%')
-                    ->orWhere('identidad', 'like', '%' . $search . '%');
-            });
+        if ($request->has('search')) {
+
+            $search = trim($request->input('search'));
+
+            $search = substr($search, 0, 30);
+
+            if ($search != '' && preg_match('/^[a-zA-Z0-9\s]+$/', $search)) {
+
+                $searchLower = strtolower($search);
+
+                $keywords = preg_split('/\s+/', $searchLower, -1, PREG_SPLIT_NO_EMPTY);
+
+                $query->where(function($q) use ($keywords) {
+                    foreach ($keywords as $keyword) {
+                        $q->where(function($qq) use ($keyword) {
+                            $qq->whereRaw('LCASE(nombre) LIKE ?', ['%' . $keyword . '%'])
+                                ->orWhereRaw('LCASE(apellido) LIKE ?', ['%' . $keyword . '%'])
+                                ->orWhereRaw('LCASE(identidad) LIKE ?', ['%' . $keyword . '%']);
+                        });
+                    }
+                });
+            }
+
+            $request->merge(['search' => $search]);
         }
 
-        $clientes = $query->paginate(10); // Pagina los resultados, 10 por página
+        $clientes = $query->paginate(10);
         return view('cliente.index', compact('clientes'));
     }
-
     /**
      * Muestra el formulario para crear un nuevo cliente.
      */

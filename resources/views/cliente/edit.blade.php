@@ -75,7 +75,7 @@
                         <div class="mb-3 col-md-6">
                             <label for="telefono" class="form-label text-white">Teléfono:</label>
                             {{-- MAXLENGTH CAMBIADO A 11 --}}
-                            <input type="text" class="form-control bg-dark text-white  @error('telefono') is-invalid @enderror" id="telefono" name="telefono" value="{{ old('telefono', $cliente->telefono) }}" maxlength="11" autocomplete="off" />
+                            <input type="text" class="form-control bg-dark text-white  @error('telefono') is-invalid @enderror" id="telefono" name="telefono" value="{{ old('telefono', $cliente->telefono) }}" maxlength="8" autocomplete="off" />
                             <div class="invalid-feedback" id="telefono-feedback">
                                 @error('telefono')
                                 {{ $message }}

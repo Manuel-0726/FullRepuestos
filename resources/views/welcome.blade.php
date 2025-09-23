@@ -36,7 +36,7 @@
             </div>
         </div>
 
-        {{-- Productos --}}
+        {{-- Productos (Autopartes Principales) --}}
         <div class="col-md-4">
             <div class="card shadow-sm h-100 border-danger">
                 <div class="card-body text-center">
@@ -47,7 +47,6 @@
                 </div>
             </div>
         </div>
-
 
         {{-- Clientes --}}
         <div class="col-md-4">
@@ -94,6 +93,29 @@
                     <h3 class="card-title mb-3 fw-semibold text-danger">Sistema de Promociones</h3>
                     <p class="card-text mb-4">Cree, administre y asigne promociones a productos y clientes.</p>
                     <a href="{{ route('promociones.index') }}" class="btn btn-danger btn-lg w-100 rounded-pill">Acceder</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100 border-danger">
+                <div class="card-body text-center">
+                    <i class="fas fa-oil-can fa-4x text-danger mb-3"></i>
+                    <h3 class="card-title mb-3 fw-semibold text-danger">Sistema de lubricantes y otros productos</h3>
+                    <p class="card-text mb-4">Gestione el inventario de aceites, aditivos, filtros y otros productos de consumo.</p>
+                    <a href="{{ route('lubricantes.index') }}" class="btn btn-danger btn-lg w-100 rounded-pill">Acceder</a>
+                </div>
+            </div>
+        </div>
+
+        {{-- NUEVO: Historia de la Empresa --}}
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100 border-danger">
+                <div class="card-body text-center">
+                    <i class="fas fa-building fa-4x text-danger mb-3"></i>
+                    <h3 class="card-title mb-3 fw-semibold text-danger">Nuestra Empresa</h3>
+                    <p class="card-text mb-4">Conozca nuestra historia, misión, visión y los valores que nos definen.</p>
+                    <a href="{{ route('about') }}" class="btn btn-danger btn-lg w-100 rounded-pill">Acceder</a>
                 </div>
             </div>
         </div>
